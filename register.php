@@ -103,10 +103,53 @@
                     <p id="confirm-password-error" class="text-xs text-red-500 ml-4 mt-1 hidden">Password tidak cocok</p>
                 </div>
 
-                <div class="animate-fade-in-up delay-300 flex items-start gap-3 px-4 pt-2">
-                    <input type="checkbox" required class="custom-checkbox mt-0.5">
-                    <label class="text-xs text-gray-500 leading-relaxed">
-                        Saya menyetujui <a href="#" class="text-finders-blue hover:text-green-600 font-medium">Syarat & Ketentuan</a> dan <a href="#" class="text-finders-blue hover:text-green-600 font-medium">Kebijakan Privasi</a>
+                <div class="animate-fade-in-up delay-300 flex items-start gap-3 px-4 pt-2 relative z-20">
+                    <input type="checkbox" required class="custom-checkbox mt-0.5 shrink-0">
+                    
+                    <label class="text-xs text-gray-500 leading-relaxed select-none">
+                        Saya menyetujui 
+                        
+                        <span class="relative group inline-block cursor-help">
+                            <span class="text-finders-blue font-medium hover:text-green-600 border-b border-dashed border-finders-blue/50 hover:border-green-600 transition-colors">
+                                Syarat & Ketentuan
+                            </span>
+                            
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/4 sm:-translate-x-1/2 mb-3 w-64 sm:w-72 p-4 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
+                                <h4 class="font-bold text-finders-blue text-sm mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    Syarat Penggunaan
+                                </h4>
+                                <ul class="text-[10px] text-gray-500 space-y-1 list-disc ml-3 text-justify">
+                                    <li>Pengguna wajib memberikan data identitas asli sesuai KTP.</li>
+                                    <li>Dilarang menggunakan akun untuk tindakan ilegal atau merugikan pihak RS.</li>
+                                    <li>FindeRS berhak memblokir akun yang melanggar ketentuan.</li>
+                                </ul>
+                                
+                                <div class="absolute -bottom-1.5 left-1/4 sm:left-1/2 -ml-1.5 w-3 h-3 bg-white border-b border-r border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </span>
+
+                        <span class="relative group inline-block cursor-help">
+                            <span class="text-finders-blue font-medium hover:text-green-600 border-b border-dashed border-finders-blue/50 hover:border-green-600 transition-colors">
+                                Kebijakan Privasi
+                            </span>
+
+                            <div class="absolute bottom-full right-0 sm:left-1/2 transform sm:-translate-x-1/2 mb-3 w-64 sm:w-72 p-4 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
+                                <h4 class="font-bold text-finders-blue text-sm mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    Keamanan Data
+                                </h4>
+                                <p class="text-[10px] text-gray-500 text-justify mb-2 leading-relaxed">
+                                    Kami menghargai privasi Anda. Data pribadi Anda dilindungi dengan enkripsi tingkat tinggi.
+                                </p>
+                                <ul class="text-[10px] text-gray-500 space-y-1 list-disc ml-3">
+                                    <li>Data tidak akan dibagikan ke pihak ketiga tanpa izin.</li>
+                                    <li>Password disimpan dalam format Hash (Bcrypt/Argon2).</li>
+                                </ul>
+                                
+                                <div class="absolute -bottom-1.5 right-8 sm:right-auto sm:left-1/2 sm:-ml-1.5 w-3 h-3 bg-white border-b border-r border-gray-100 transform rotate-45"></div>
+                            </div>
+                        </span>
                     </label>
                 </div>
 
