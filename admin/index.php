@@ -101,10 +101,12 @@ session_start();
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-gray-700">Penjadwalan Kunjungan Terbaru</h2>
 
-                <a href="jadwal_form.php" 
-                   class="px-4 py-2 bg-green-600 text-white rounded-xl text-sm hover:bg-green-700 transition">
-                    + Tambah Jadwal
+                <a href="#" 
+                    onclick="openModal('jadwal_form.php')" 
+                    class="px-4 py-2 bg-green-600 text-white rounded-xl text-sm hover:bg-green-700 transition">
+                        + Tambah Jadwal
                 </a>
+
             </div>
 
             <div class="overflow-x-auto">
@@ -138,5 +140,50 @@ session_start();
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
+    <!-- OVERLAY (Modal) -->
+    <div id="modalOverlay" 
+        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
+
+        <div id="modalContent"
+            class="bg-white w-[90%] max-w-xl p-6 rounded-2xl shadow-xl animate-fade-in-up relative">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal()" 
+                    class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+
+            <!-- Dynamic Content Loaded Here -->
+            <div id="modalBody" class="mt-4 text-gray-700 text-sm">
+                Memuat...
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    function openModal(url) {
+        // Tampilkan overlay dulu
+        document.getElementById("modalOverlay").classList.remove("hidden");
+
+        // Tempat menaruh HTML dari file eksternal
+        let target = document.getElementById("modalBody");
+        target.innerHTML = "Memuat...";
+
+        // AJAX load file PHP (form tambah / update)
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                target.innerHTML = data;
+            })
+            .catch(err => {
+                target.innerHTML = "Gagal memuat data.";
+            });
+    }
+
+    function closeModal() {
+        document.getElementById("modalOverlay").classList.add("hidden");
+    }
+    </script>
 </body>
 </html>
