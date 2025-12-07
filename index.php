@@ -1,10 +1,14 @@
-<?php session_start(); ?>
+<?php 
+session_start(); 
+include 'config/db_connect.php';
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beranda - FindeRS</title>
+    <title>Beranda</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,26 +23,19 @@
     <main class="flex-1 h-full overflow-y-auto relative scroll-smooth bg-gray-50">
         
         <!-- Hero Section -->
-        <div class="relative w-full h-[500px] lg:h-[550px]">
-            <!-- Background Placeholder -->
-            <div class="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900">
-                <div class="absolute inset-0 opacity-20">
-                    <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="hero-pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                                <circle cx="20" cy="20" r="1.5" fill="white" opacity="0.3"/>
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#hero-pattern)"/>
-                    </svg>
-                </div>
+        <div class="relative w-full min-h-[850px] pb-20">
+            <!-- Background Image -->
+            <div class="absolute inset-0 w-full h-full">
+                <img src="assets/img/home_background.jpg" alt="Hospital Background" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-blue-950/60 mix-blend-multiply"></div>
+                <!-- Gradient Overlay for Text Visibility -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent"></div>
+                <!-- Gradient Overlay for Transition -->
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-50 via-gray-50/20 to-transparent"></div>
             </div>
             
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-blue-900/30"></div>
-
             <!-- Hero Content -->
-            <div class="relative z-10 container mx-auto px-6 lg:px-12 h-full flex flex-col justify-center">
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 pt-32 pb-10 flex flex-col justify-center">
                 <div class="w-full lg:w-2/3 animate-fade-in-down">
                     <h1 class="text-4xl lg:text-6xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
                         Finde<span class="text-finders-green">RS</span>
@@ -67,122 +64,125 @@
                                 <i class="fa-solid fa-hospital text-finders-green"></i>
                             </div>
                             <div>
-                                <p class="text-lg font-bold">500+</p>
-                                <p class="text-xs text-blue-200">Rumah Sakit</p>
+                                <p class="text-lg font-bold text-white drop-shadow-md">500+</p>
+                                <p class="text-xs text-white font-medium drop-shadow-md">Rumah Sakit</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 text-white/80">
-                            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm shadow-lg">
                                 <i class="fa-solid fa-user-doctor text-finders-green"></i>
                             </div>
                             <div>
-                                <p class="text-lg font-bold">10K+</p>
-                                <p class="text-xs text-blue-200">Dokter</p>
+                                <p class="text-lg font-bold text-white drop-shadow-md">10K+</p>
+                                <p class="text-xs text-white font-medium drop-shadow-md">Dokter</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 text-white/80">
-                            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
+                            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center backdrop-blur-sm shadow-lg">
                                 <i class="fa-solid fa-users text-finders-green"></i>
                             </div>
                             <div>
-                                <p class="text-lg font-bold">1M+</p>
-                                <p class="text-xs text-blue-200">Pengguna</p>
+                                <p class="text-lg font-bold text-white drop-shadow-md">1M+</p>
+                                <p class="text-xs text-white font-medium drop-shadow-md">Pengguna</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Services Section -->
+                <div class="w-full mt-12 animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <h2 class="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
+                        Cari Layanan Kesehatan
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <!-- Service Card 1 - Onkologi -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
+                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-pink-100 to-pink-200">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
+                                    Onkologi
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Service Card 2 - Poli Gigi -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
+                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-cyan-100 to-cyan-200">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
+                                    Poli Gigi
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 3 - Bedah Umum -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
+                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-green-100 to-green-200">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
+                                    Bedah Umum
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 4 - Kardiologi -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
+                            <div class="h-40 overflow-hidden relative bg-gradient-to-br from-red-100 to-red-200">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
+                                    Kardiologi
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Feature Card -->
-            <div class="absolute top-20 right-10 hidden xl:block w-80 animate-fade-in-down" style="animation-delay: 0.2s;">
-                <div class="glass-card rounded-2xl p-5 shadow-2xl border-t-4 border-t-finders-green transition hover:-translate-y-1">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="bg-blue-100 p-2 rounded-lg text-finders-blue">
-                            <i class="fa-solid fa-bolt text-xl"></i>
+            <!-- Right Floating Section -->
+            <div class="absolute z-20 flex flex-col gap-4 items-end bottom-8 right-6 lg:bottom-10 lg:right-10 xl:top-20 xl:right-10 xl:bottom-auto">
+                <!-- Quick Feature Card -->
+                <div class="hidden xl:block w-80 animate-fade-in-down" style="animation-delay: 0.2s;">
+                    <div class="glass-card rounded-2xl p-5 shadow-2xl border-t-4 border-t-finders-green transition hover:-translate-y-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="bg-blue-100 p-2 rounded-lg text-finders-blue">
+                                <i class="fa-solid fa-bolt text-xl"></i>
+                            </div>
+                            <h3 class="font-bold text-gray-800 text-lg">Fitur Cepat</h3>
                         </div>
-                        <h3 class="font-bold text-gray-800 text-lg">Fitur Cepat</h3>
-                    </div>
-                    <!-- Placeholder Image -->
-                    <div class="w-full h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-xl mb-3 flex items-center justify-center">
-                        <div class="text-center">
-                            <i class="fa-solid fa-stethoscope text-4xl text-finders-blue/40 mb-2"></i>
-                            <p class="text-xs text-gray-400">Gambar Fitur</p>
+                        <!-- Placeholder Image -->
+                        <div class="w-full h-32 bg-gradient-to-br from-blue-100 to-green-100 rounded-xl mb-3 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fa-solid fa-stethoscope text-4xl text-finders-blue/40 mb-2"></i>
+                                <p class="text-xs text-gray-400">Gambar Fitur</p>
+                            </div>
                         </div>
-                    </div>
-                    <p class="text-xs text-gray-600 mb-4 leading-relaxed font-medium">Akses cepat ke penjadwalan, informasi layanan rumah sakit, dan dashboard admin.</p>
-                    <div class="flex gap-2">
-                        <button class="flex-1 bg-finders-green text-white py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-600 transition">Buka Dashboard</button>
-                        <button class="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-xs font-semibold hover:bg-gray-50 transition">Info Lanjut</button>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed font-medium">Akses cepat ke penjadwalan, informasi layanan rumah sakit, dan dashboard admin.</p>
+                        <div class="flex gap-2">
+                            <button class="flex-1 bg-finders-green text-white py-2 rounded-lg text-xs font-bold shadow-md hover:bg-green-600 transition">Buka Dashboard</button>
+                            <button class="flex-1 border border-gray-300 text-gray-600 py-2 rounded-lg text-xs font-semibold hover:bg-gray-50 transition">Info Lanjut</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Emergency Contact -->
-            <div class="absolute bottom-8 right-6 lg:bottom-10 lg:right-10 z-20 animate-bounce-slow">
-                <div class="bg-red-600 text-white rounded-2xl p-4 shadow-red-500/50 shadow-xl flex items-center gap-4 hover:bg-red-700 transition cursor-pointer group transform hover:scale-105">
-                    <div class="text-left">
-                        <p class="text-[10px] font-bold uppercase opacity-90 tracking-wider">Kontak Darurat</p>
-                        <p class="text-xl font-bold leading-none">112 / 119</p>
-                    </div>
-                    <div class="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center group-hover:rotate-12 transition">
-                        <i class="fa-solid fa-phone-volume text-xl"></i>
+                <!-- Emergency Contact -->
+                <div class="animate-bounce-slow">
+                    <div class="bg-red-600 text-white rounded-2xl p-4 shadow-red-500/50 shadow-xl flex items-center gap-4 hover:bg-red-700 transition cursor-pointer group transform hover:scale-105">
+                        <div class="text-left">
+                            <p class="text-[10px] font-bold uppercase opacity-90 tracking-wider">Kontak Darurat</p>
+                            <p class="text-xl font-bold leading-none">112 / 119</p>
+                        </div>
+                        <div class="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center group-hover:rotate-12 transition">
+                            <i class="fa-solid fa-phone-volume text-xl"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Main Content Area -->
-        <div class="relative px-6 lg:px-12 -mt-10 z-20 pb-0">
+        <div class="relative px-6 lg:px-12 mt-8 z-20 pb-0">
             
-            <!-- Health Services Section -->
-            <div class="mb-16 animate-fade-in-up" style="animation-delay: 0.3s;">
-                <h2 class="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
-                    Cari Layanan Kesehatan
-                </h2>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <!-- Service Card 1 - Onkologi -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                        <div class="h-40 overflow-hidden relative bg-gradient-to-br from-pink-100 to-pink-200">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                Onkologi
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <!-- Service Card 2 - Poli Gigi -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                        <div class="h-40 overflow-hidden relative bg-gradient-to-br from-cyan-100 to-cyan-200">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                Poli Gigi
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Service Card 3 - Bedah Umum -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                        <div class="h-40 overflow-hidden relative bg-gradient-to-br from-green-100 to-green-200">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                Bedah Umum
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Service Card 4 - Kardiologi -->
-                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden group hover:-translate-y-2 transition-all duration-300 cursor-pointer border border-gray-100">
-                        <div class="h-40 overflow-hidden relative bg-gradient-to-br from-red-100 to-red-200">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <span class="absolute bottom-4 left-4 text-white font-bold text-lg drop-shadow-md flex items-center gap-2">
-                                Kardiologi
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Nearby Hospitals Section -->
             <div class="animate-fade-in-up mt-8" style="animation-delay: 0.5s;">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
@@ -198,89 +198,43 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Hospital Card 1 -->
+    
+                    <?php 
+                    $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs ASC LIMIT 6");
+                    while($d = mysqli_fetch_array($query_rs)) {
+                    ?>
+                    
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-                        <div class="h-48 overflow-hidden rounded-t-2xl relative bg-gradient-to-br from-blue-100 to-blue-200">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <i class="fa-solid fa-hospital text-6xl text-blue-300"></i>
-                            </div>
-                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-finders-blue flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-location-dot text-red-500"></i> 1.2 km
-                            </div>
+                        
+                        <div class="h-48 overflow-hidden rounded-t-2xl relative bg-gray-100">
+                            <img src="assets/img/<?= $d['foto'] ?>" 
+                                alt="<?= $d['nama_rs'] ?>" 
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                         </div>
+                        
                         <div class="p-5 flex flex-col flex-1">
-                            <div class="text-xs font-bold text-finders-green mb-1 uppercase tracking-wide">Jakarta Selatan</div>
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-finders-blue transition line-clamp-1">RSUP Fatmawati</h3>
-                            <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">Rumah Sakit Umum Pusat rujukan nasional dengan fasilitas lengkap.</p>
+                            <div class="text-xs font-bold text-finders-green mb-1 uppercase tracking-wide">
+                                <?= htmlspecialchars($d['wilayah']) ?>  </div>
+                            
+                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-finders-blue transition line-clamp-1">
+                                <?= htmlspecialchars($d['nama_rs']) ?>  </h3>
+                            
+                            <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">
+                                <?= htmlspecialchars($d['deskripsi']) ?> </p>
                             
                             <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                                 <div class="flex items-center gap-1 text-yellow-500 text-sm">
                                     <i class="fa-solid fa-star"></i>
-                                    <span class="font-bold text-gray-700">4.8</span>
-                                    <span class="text-gray-400 text-xs">(1.2k)</span>
+                                    <span class="font-bold text-gray-700">4.5</span>
                                 </div>
-                                <a href="rs_detail.php" class="px-4 py-2 bg-blue-50 text-finders-blue text-xs font-bold rounded-lg hover:bg-finders-blue hover:text-white transition uppercase tracking-wide">
+                                
+                                <a href="rs_detail.php?id=<?= $d['id_rs'] ?>" class="px-4 py-2 bg-blue-50 text-finders-blue text-xs font-bold rounded-lg hover:bg-finders-blue hover:text-white transition uppercase tracking-wide">
                                     Detail
                                 </a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Hospital Card 2 -->
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-                        <div class="h-48 overflow-hidden rounded-t-2xl relative bg-gradient-to-br from-purple-100 to-purple-200">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <i class="fa-solid fa-house-medical text-6xl text-purple-300"></i>
-                            </div>
-                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-finders-blue flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-location-dot text-red-500"></i> 3.5 km
-                            </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-1">
-                            <div class="text-xs font-bold text-finders-green mb-1 uppercase tracking-wide">Jakarta Pusat</div>
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-finders-blue transition line-clamp-1">RS Siloam Hospital</h3>
-                            <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">Jaringan rumah sakit swasta dengan standar pelayanan internasional.</p>
-                            
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <div class="flex items-center gap-1 text-yellow-500 text-sm">
-                                    <i class="fa-solid fa-star"></i>
-                                    <span class="font-bold text-gray-700">4.7</span>
-                                    <span class="text-gray-400 text-xs">(850)</span>
-                                </div>
-                                <a href="rs_detail.php" class="px-4 py-2 bg-blue-50 text-finders-blue text-xs font-bold rounded-lg hover:bg-finders-blue hover:text-white transition uppercase tracking-wide">
-                                    Detail
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Hospital Card 3 -->
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full">
-                        <div class="h-48 overflow-hidden rounded-t-2xl relative bg-gradient-to-br from-teal-100 to-teal-200">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <i class="fa-solid fa-hospital-user text-6xl text-teal-300"></i>
-                            </div>
-                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded-lg text-xs font-bold text-finders-blue flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-location-dot text-red-500"></i> 5.1 km
-                            </div>
-                        </div>
-                        <div class="p-5 flex flex-col flex-1">
-                            <div class="text-xs font-bold text-finders-green mb-1 uppercase tracking-wide">Jakarta Selatan</div>
-                            <h3 class="font-bold text-lg text-gray-800 mb-2 group-hover:text-finders-blue transition line-clamp-1">Mayapada Hospital</h3>
-                            <p class="text-gray-500 text-sm mb-4 line-clamp-2 flex-1">Layanan kesehatan premium dengan teknologi medis terkini.</p>
-                            
-                            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <div class="flex items-center gap-1 text-yellow-500 text-sm">
-                                    <i class="fa-solid fa-star"></i>
-                                    <span class="font-bold text-gray-700">4.9</span>
-                                    <span class="text-gray-400 text-xs">(2k)</span>
-                                </div>
-                                <a href="rs_detail.php" class="px-4 py-2 bg-blue-50 text-finders-blue text-xs font-bold rounded-lg hover:bg-finders-blue hover:text-white transition uppercase tracking-wide">
-                                    Detail
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <?php } ?>
                 </div>
             </div>
 
@@ -323,6 +277,5 @@
             </div>
         </div>
     </main>
-
 </body>
 </html>
