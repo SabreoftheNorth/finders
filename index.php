@@ -38,17 +38,20 @@ include 'config/db_connect.php';
                         Temukan rumah sakit dan layanan medis terbaik yang Anda butuhkan dengan cepat, tepat, dan mudah.
                     </p>
 
-                    <div class="glass-card p-2 rounded-2xl flex items-center shadow-2xl max-w-2xl transform hover:scale-[1.01] transition-transform duration-300">
-                        <div class="pl-4 text-gray-400">
-                            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                    <form action="layanan.php" method="GET" class="w-full">
+                        <div class="glass-card p-2 rounded-2xl flex items-center shadow-2xl max-w-2xl transform hover:scale-[1.01] transition-transform duration-300">
+                            <div class="pl-4 text-gray-400">
+                                <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                            </div>
+                            <input type="text" name="keyword" required
+                                placeholder="Cari: misal 'Kanker', 'Gigi', 'Jantung'..." 
+                                class="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-gray-800 placeholder-gray-500 px-4 py-3 text-base">
+                            <button type="submit" class="bg-finders-green hover:bg-green-600 text-white px-6 lg:px-8 py-3 rounded-xl font-semibold transition-all shadow-lg flex items-center gap-2 whitespace-nowrap">
+                                <i class="fa-solid fa-search"></i>
+                                <span class="hidden sm:inline">Cari</span>
+                            </button>
                         </div>
-                        <input type="text" placeholder="Cari: misal 'Kanker', 'Gigi', 'Jantung'..." 
-                            class="w-full bg-transparent border-none focus:ring-0 focus:outline-none text-gray-800 placeholder-gray-500 px-4 py-3 text-base">
-                        <button class="bg-finders-green hover:bg-green-600 text-white px-6 lg:px-8 py-3 rounded-xl font-semibold transition-all shadow-lg flex items-center gap-2 whitespace-nowrap">
-                            <i class="fa-solid fa-search"></i>
-                            <span class="hidden sm:inline">Cari</span>
-                        </button>
-                    </div>
+                    </form>
 
                     <div class="flex flex-wrap gap-6 mt-8 mb-6">
                         <div class="flex items-center gap-2 text-white">
@@ -80,86 +83,6 @@ include 'config/db_connect.php';
                         </div>
                     </div>
                 </div>
-
-                <div class="w-full mt-8 animate-fade-in-up" style="animation-delay: 0.3s;">
-                    <h2 class="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
-                        Cari Layanan Kesehatan
-                    </h2>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-                        <?php 
-                        // 1. QUERY KATEGORI
-                        $query_kat = mysqli_query($conn, "SELECT kategori, COUNT(*) as total FROM data_layanan_rs GROUP BY kategori ORDER BY total DESC LIMIT 4");
-
-                        // 2. FUNGSI MAPPING STYLE
-                        function getServiceStyle($kategori) {
-                            $kategori = strtolower($kategori);
-                            
-                            // Default Style (Abu-abu)
-                            $style = [
-                                'image' => 'default_service.jpg',
-                                'gradient' => 'from-gray-500/90 via-gray-600/90 to-gray-800/90', 
-                                'border' => 'border-gray-400/50'
-                            ];
-
-                            if (strpos($kategori, 'bedah') !== false) {
-                                $style = [
-                                    'image' => 'layanan_bedah.jpg',
-                                    'gradient' => 'from-green-500/90 via-green-600/80 to-green-900/90',
-                                    'border' => 'border-green-400/50'
-                                ];
-                            }
-                            elseif (strpos($kategori, 'darurat') !== false || strpos($kategori, 'ugd') !== false) {
-                                $style['image'] = 'layanan_igd.jpg';
-                            }
-                            elseif (strpos($kategori, 'penunjang') !== false || strpos($kategori, 'radiologi') !== false) {
-                                $style['image'] = 'layanan_penunjang.png';
-                            }
-                            elseif (strpos($kategori, 'spesialis') !== false) {
-                                $style['image'] = 'layanan_spesialis.jpg';
-                            }
-
-                            return $style;
-                        }
-
-                        // 3. LOOPING KARTU LAYANAN
-                        if(mysqli_num_rows($query_kat) > 0) {
-                            while($kat = mysqli_fetch_array($query_kat)) {
-                                $style = getServiceStyle($kat['kategori']);
-                                $nama_kategori = htmlspecialchars($kat['kategori']);
-                        ?>
-
-                        <a href="layanan.php?kategori=<?= urlencode($kat['kategori']) ?>" class="block h-full">
-                            <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden transition-transform hover:scale-[1.02] cursor-pointer group">
-                                <img src="assets/img/<?= $style['image'] ?>" 
-                                    alt="<?= $nama_kategori ?>" 
-                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
-                                <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10 tracking-wide">
-                                    <?= $nama_kategori ?>
-                                </span>
-                            </div>
-                        </a>
-
-                        <?php 
-                            } 
-                        } else {
-                            // Dummy Data
-                            $dummies = ['Penunjang', 'Gawat Darurat', 'Bedah', 'Spesialis'];
-                            foreach($dummies as $d) {
-                                $style = getServiceStyle($d);
-                                echo '
-                                <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden group">
-                                    <img src="assets/img/'.$style['image'].'" class="absolute inset-0 w-full h-full object-cover">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
-                                    <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10">'.$d.'</span>
-                                </div>';
-                            }
-                        }
-                        ?>
-
-                    </div>
             </div>
 
             <div class="absolute z-20 flex flex-col gap-4 items-end bottom-8 right-6 lg:bottom-10 lg:right-10 xl:top-20 xl:right-10 xl:bottom-auto">
@@ -197,6 +120,83 @@ include 'config/db_connect.php';
                     </div>
                 </div>
             </div>
+            
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 mt-12 pb-32">
+                <div class="w-full animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <h2 class="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
+                        Cari Layanan Kesehatan
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                        <?php 
+                        $query_kat = mysqli_query($conn, "SELECT kategori, COUNT(*) as total FROM data_layanan_rs GROUP BY kategori ORDER BY total DESC LIMIT 4");
+
+                        function getServiceStyle($kategori) {
+                            $kategori = strtolower($kategori);
+                            $style = [
+                                'image' => 'default_service.jpg',
+                                'gradient' => 'from-gray-500/90 via-gray-600/90 to-gray-800/90', 
+                                'border' => 'border-gray-400/50'
+                            ];
+
+                            if (strpos($kategori, 'bedah') !== false) {
+                                $style = [
+                                    'image' => 'layanan_bedah.jpg',
+                                    'gradient' => 'from-green-500/90 via-green-600/80 to-green-900/90',
+                                    'border' => 'border-green-400/50'
+                                ];
+                            }
+                            elseif (strpos($kategori, 'darurat') !== false || strpos($kategori, 'ugd') !== false) {
+                                $style['image'] = 'layanan_igd.jpg';
+                            }
+                            elseif (strpos($kategori, 'penunjang') !== false || strpos($kategori, 'radiologi') !== false) {
+                                $style['image'] = 'layanan_penunjang.png';
+                            }
+                            elseif (strpos($kategori, 'spesialis') !== false) {
+                                $style['image'] = 'layanan_spesialis.jpg';
+                            }
+
+                            return $style;
+                        }
+
+                        if(mysqli_num_rows($query_kat) > 0) {
+                            while($kat = mysqli_fetch_array($query_kat)) {
+                                $style = getServiceStyle($kat['kategori']);
+                                $nama_kategori = htmlspecialchars($kat['kategori']);
+                        ?>
+
+                        <a href="layanan.php?kategori=<?= urlencode($kat['kategori']) ?>" class="block h-full">
+                            <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden transition-transform hover:scale-[1.02] cursor-pointer group">
+                                <img src="assets/img/<?= $style['image'] ?>" 
+                                    alt="<?= $nama_kategori ?>" 
+                                    class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
+                                <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10 tracking-wide">
+                                    <?= $nama_kategori ?>
+                                </span>
+                            </div>
+                        </a>
+
+                        <?php 
+                            } 
+                        } else {
+                            $dummies = ['Penunjang', 'Gawat Darurat', 'Bedah', 'Spesialis'];
+                            foreach($dummies as $d) {
+                                $style = getServiceStyle($d);
+                                echo '
+                                <div class="relative h-44 rounded-2xl border border-gray-200 shadow-lg overflow-hidden group">
+                                    <img src="assets/img/'.$style['image'].'" class="absolute inset-0 w-full h-full object-cover">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
+                                    <span class="absolute bottom-4 left-4 text-white font-bold text-xl drop-shadow-md z-10">'.$d.'</span>
+                                </div>';
+                            }
+                        }
+                        ?>
+
+                    </div>
+            </div>
+        </div>
         </div>
 
         <div class="relative px-6 lg:px-12 mt-8 z-20 pb-0">
@@ -204,12 +204,12 @@ include 'config/db_connect.php';
             <div class="animate-fade-in-up mt-8" style="animation-delay: 0.5s;">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                     <div>
-                        <h2 class="text-2xl font-bold text-white mb-1">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-1">
                             Rumah Sakit Terdekat
                         </h2>
-                        <p class="text-blue-100 text-sm">Rekomendasi rumah sakit terbaik di sekitar Anda berdasarkan rating.</p>
+                        <p class="text-gray-500 text-sm">Rekomendasi rumah sakit terbaik di sekitar Anda berdasarkan rating.</p>
                     </div>
-                    <a href="rs_daftar.php" class="text-white font-semibold text-sm hover:text-green-600 transition flex items-center gap-1 group">
+                    <a href="rs_daftar.php" class="text-gray-500 font-semibold text-sm hover:text-gray-900 transition flex items-center gap-1 group">
                         Lihat Semua <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
@@ -261,8 +261,8 @@ include 'config/db_connect.php';
 
             <div class="mt-20 animate-fade-in-up" style="animation-delay: 0.7s;">
                 <div class="text-center mb-12">
-                    <h2 class="text-2xl font-bold text-white mb-2">Mengapa Memilih FindeRS?</h2>
-                    <p class="text-blue-100 text-sm">Platform terpercaya untuk kebutuhan kesehatan Anda</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Mengapa Memilih FindeRS?</h2>
+                    <p class="text-gray-500 text-sm">Platform terpercaya untuk kebutuhan kesehatan Anda</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
