@@ -13,27 +13,54 @@ $id_user = $_SESSION['user_id'];
 $nama = mysqli_real_escape_string($conn, $_POST['nama']);
 $email = mysqli_real_escape_string($conn, $_POST['email']);
 $no_telpon = mysqli_real_escape_string($conn, $_POST['no_telpon']);
-$password_lama = $_POST['password_lama'];
+$password_lama = isset($_POST['password_lama']) ? trim($_POST['password_lama']) : ''; 
 $password_baru = $_POST['password_baru'] ?? '';
 
-// Validasi: Cek password lama
-$query = mysqli_query($conn, "SELECT password FROM akun_user WHERE id_user = '$id_user'");
-$user = mysqli_fetch_array($query);
-
-if(!password_verify($password_lama, $user['password'])) {
-    $_SESSION['msg_type'] = 'error';
-    $_SESSION['msg_content'] = 'Password lama yang Anda masukkan salah!';
-    header("Location: ../profile.php");
+// Ambil data user saat ini dari database
+$query = mysqli_query($conn, "SELECT * FROM akun_user WHERE id_user = '$id_user'");
+if (!$query || mysqli_num_rows($query) == 0) {
+    // Jika user tidak ditemukan, logout paksa
+    session_destroy();
+    header("Location: ../login.php");
     exit;
 }
+$user = mysqli_fetch_array($query);
 
-// Cek apakah email sudah digunakan user lain
-$check_email = mysqli_query($conn, "SELECT id_user FROM akun_user WHERE email = '$email' AND id_user != '$id_user'");
-if(mysqli_num_rows($check_email) > 0) {
-    $_SESSION['msg_type'] = 'error';
-    $_SESSION['msg_content'] = 'Email sudah digunakan oleh user lain!';
-    header("Location: ../profile.php");
-    exit;
+// --- LOGIKA VERIFIKASI ---
+
+// Skenario 1: User mengisi Password Lama (Saat Edit Email / Telepon / Password)
+if(!empty($password_lama)) {
+    // Verifikasi password dengan bcrypt
+    if (!password_verify($password_lama, $user['password'])) {
+        $_SESSION['msg_type'] = 'error';
+        $_SESSION['msg_content'] = 'Password lama yang Anda masukkan salah!';
+        header("Location: ../profile.php");
+        exit;
+    }
+} 
+// Skenario 2: User TIDAK mengisi Password Lama (Saat Edit Nama)
+else {
+    // Pastikan user benar-benar hanya mengubah Nama.
+    // Jika Email atau Telepon berubah tapi tidak ada password, tolak.
+    if($_POST['email'] != $user['email'] || $_POST['no_telpon'] != $user['no_telpon'] || !empty($password_baru)) {
+        $_SESSION['msg_type'] = 'error';
+        $_SESSION['msg_content'] = 'Demi keamanan, Anda wajib memasukkan password lama untuk mengubah Email, Nomor Telepon, atau Password!';
+        header("Location: ../profile.php");
+        exit;
+    }
+}
+
+// --- PROSES UPDATE ---
+
+// Cek apakah email sudah digunakan user lain (hanya jika email berubah)
+if($email != $user['email']) {
+    $check_email = mysqli_query($conn, "SELECT id_user FROM akun_user WHERE email = '$email' AND id_user != '$id_user'");
+    if(mysqli_num_rows($check_email) > 0) {
+        $_SESSION['msg_type'] = 'error';
+        $_SESSION['msg_content'] = 'Email sudah digunakan oleh user lain!';
+        header("Location: ../profile.php");
+        exit;
+    }
 }
 
 // Update data user

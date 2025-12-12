@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 07, 2025 at 06:50 AM
+-- Generation Time: Dec 12, 2025 at 09:08 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -86,8 +86,7 @@ CREATE TABLE `akun_user` (
 --
 
 INSERT INTO `akun_user` (`id_user`, `nama`, `email`, `password`, `no_telpon`, `tanggal_daftar`) VALUES
-(1, 'Budi Santoso', 'budi@example.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '081234567890', '2025-12-03 14:36:32'),
-(2, 'Siti Aminah', 'siti@example.com', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', '081298765432', '2025-12-03 14:36:32');
+(1, 'Budi Santoso', 'budi@example.com', '$2y$10$EQ..4Orcxtt9vKnttsmGauc4beBy5M5NVoIRCuvmmX2GDIQg1R.b6', '081234567890', '2025-12-03 14:36:32');
 
 -- --------------------------------------------------------
 
@@ -141,7 +140,8 @@ CREATE TABLE `data_penjadwalan` (
 --
 
 INSERT INTO `data_penjadwalan` (`id_penjadwalan`, `id_user`, `id_rs`, `id_layanan`, `no_nik`, `nama_pasien`, `tanggal_kunjungan`, `status`, `catatan`, `dibuat_pada`, `queue_number`) VALUES
-(1, 1, 1, 1, '1234567890123456', 'Budi Santoso', '2025-12-04', 'Menunggu', 'Catatan contoh', '2025-12-03 14:36:32', 'F-001');
+(1, 1, 1, 1, '1234567890123456', 'Budi Santoso', '2025-12-04', 'Dikonfirmasi', 'Catatan contoh', '2025-12-03 14:36:32', 'F-001'),
+(4, 1, 1, 2, '3173051234567890', 'Budi Santoso', '2025-12-20', 'Menunggu', 'Pemeriksaan lanjutan onkologi', '2025-12-10 11:19:37', 'F-004');
 
 -- --------------------------------------------------------
 
@@ -241,7 +241,7 @@ ALTER TABLE `akun_rumah_sakit`
 -- AUTO_INCREMENT for table `akun_user`
 --
 ALTER TABLE `akun_user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `data_layanan_rs`
@@ -253,7 +253,7 @@ ALTER TABLE `data_layanan_rs`
 -- AUTO_INCREMENT for table `data_penjadwalan`
 --
 ALTER TABLE `data_penjadwalan`
-  MODIFY `id_penjadwalan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_penjadwalan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `data_rumah_sakit`

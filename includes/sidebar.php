@@ -19,10 +19,8 @@
     <div class="p-3 pt-6 pb-4">
         <?php if (isset($_SESSION['user_id'])): ?>
             <a href="profile.php" class="flex items-center gap-3 p-2 hover:bg-blue-800/50 rounded-xl transition-all duration-300 relative group/item">
-                <div class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-white/30 bg-finders-blue flex items-center justify-center flex-shrink-0">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
+                <div class="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full border-2 border-white/30 bg-finders-blue flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <img src="assets/img/profile.png" alt="Profile" class="w-full h-full object-cover">
                 </div>
                 <div class="overflow-hidden whitespace-nowrap max-w-0 opacity-0 group-hover/sidebar:max-w-xs group-hover/sidebar:opacity-100 transition-all duration-500 ease-in-out">
                     <p class="text-base font-semibold truncate"><?= $_SESSION['user_name'] ?? 'User' ?></p>

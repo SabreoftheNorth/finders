@@ -1,33 +1,4 @@
 <?php 
-/**
- * ================================================================
- * PROFILE PAGE - User Account Management
- * ================================================================
- * 
- * Features:
- * - Display user profile information
- * - Avatar with user initial
- * - Reveal/Hide sensitive data (Email & Phone)
- * - Edit profile functionality (Modal - To be implemented)
- * - Clean and organized layout
- * 
- * Structure:
- * 1. User authentication check
- * 2. Fetch user data from database
- * 3. Display profile card with:
- *    - Header with gradient background
- *    - Avatar and user name
- *    - User information (Display Name, Username, Email, Phone)
- *    - Member since date
- * 4. JavaScript functions for interactions
- * 
- * TODO:
- * - Implement floating modal for edit functionality
- * - Add form validation in modal
- * - Implement remove phone functionality
- * 
- * ================================================================
- */
 
 session_start();
 include 'config/db_connect.php';
@@ -98,9 +69,7 @@ unset($_SESSION['msg_content']);
                         <div class="flex items-center gap-6">
                             <!-- Avatar Circle -->
                             <div class="w-32 h-32 rounded-full bg-white p-2.5 shadow-xl ring-4 ring-white">
-                                <div class="w-full h-full rounded-full bg-blue-100 flex items-center justify-center text-5xl font-bold text-blue-600">
-                                    <?= strtoupper(substr($user['nama'], 0, 1)) ?>
-                                </div>
+                                <img src="assets/img/profile.png" alt="Profile Picture" class="w-full h-full rounded-full object-cover">
                             </div>
                             
                             <!-- Nama User -->
@@ -120,22 +89,10 @@ unset($_SESSION['msg_content']);
                         <!-- Display Name -->
                         <div class="flex items-center justify-between py-5 border-b border-gray-100 hover:bg-gray-50 px-4 rounded-lg transition-all">
                             <div class="flex-1">
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Display Name</label>
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Nama</label>
                                 <p class="text-gray-900 font-semibold text-lg"><?= htmlspecialchars($user['nama']) ?></p>
                             </div>
                             <button type="button" onclick="openEditModal('nama')" 
-                                    class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all">
-                                Edit
-                            </button>
-                        </div>
-
-                        <!-- Username (Email) -->
-                        <div class="flex items-center justify-between py-5 border-b border-gray-100 hover:bg-gray-50 px-4 rounded-lg transition-all">
-                            <div class="flex-1">
-                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Username</label>
-                                <p class="text-gray-900 font-semibold text-lg"><?= htmlspecialchars($user['email']) ?></p>
-                            </div>
-                            <button type="button" onclick="openEditModal('username')" 
                                     class="text-white bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg text-sm font-semibold transition-all">
                                 Edit
                             </button>
@@ -147,12 +104,12 @@ unset($_SESSION['msg_content']);
                                 <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Email</label>
                                 <div class="flex items-center gap-4">
                                     <p class="text-gray-900 font-semibold text-lg">
-                                        <span id="emailHidden">************@gmail.com</span>
+                                        <span id="emailHidden">************@example.com</span>
                                         <span id="emailRevealed" style="display: none;"><?= htmlspecialchars($user['email']) ?></span>
                                     </p>
                                     <button type="button" onclick="toggleReveal('email')" 
                                             class="text-blue-600 hover:text-blue-700 text-sm font-bold underline">
-                                        <span id="emailRevealText">Reveal</span>
+                                        <span id="emailRevealText">Perlihatkan</span>
                                     </button>
                                 </div>
                             </div>
@@ -173,7 +130,7 @@ unset($_SESSION['msg_content']);
                                     </p>
                                     <button type="button" onclick="toggleReveal('phone')" 
                                             class="text-blue-600 hover:text-blue-700 text-sm font-bold underline">
-                                        <span id="phoneRevealText">Reveal</span>
+                                        <span id="phoneRevealText">Perlihatkan</span>
                                     </button>
                                 </div>
                             </div>
@@ -194,12 +151,130 @@ unset($_SESSION['msg_content']);
                 </div>
             </div>
 
-            <!-- Floating Modal untuk Edit (Prepared - akan dikerjakan nanti) -->
-            <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Edit Profile</h3>
-                    <p class="text-gray-600">Modal edit akan diimplementasikan nanti...</p>
-                    <button onclick="closeEditModal()" class="mt-4 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg">Close</button>
+            <!-- Floating Modal untuk Edit Nama -->
+            <div id="editNameModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 transform transition-all scale-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Edit Nama</h3>
+                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form action="api/profile_process.php" method="POST" class="space-y-5">
+                        <!-- Hidden Fields to keep other data -->
+                        <input type="hidden" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+                        <input type="hidden" name="no_telpon" value="<?= htmlspecialchars($user['no_telpon']) ?>">
+
+                        <!-- Nama -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Lengkap</label>
+                            <input type="text" name="nama" value="<?= htmlspecialchars($user['nama']) ?>" required
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="Nama Lengkap Anda">
+                        </div>
+
+                        <div class="flex gap-3 mt-8">
+                            <button type="button" onclick="closeEditModal()" class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Floating Modal untuk Edit Email -->
+            <div id="editEmailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 transform transition-all scale-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Edit Email</h3>
+                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form action="api/profile_process.php" method="POST" class="space-y-5">
+                        <!-- Hidden Fields to keep other data -->
+                        <input type="hidden" name="nama" value="<?= htmlspecialchars($user['nama']) ?>">
+                        <input type="hidden" name="no_telpon" value="<?= htmlspecialchars($user['no_telpon']) ?>">
+
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                            <input type="email" name="email" value="<?= htmlspecialchars($user['email']) ?>" required
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="email@example.com">
+                        </div>
+
+                        <div class="border-t border-gray-100 my-4"></div>
+
+                        <!-- Password Lama (Konfirmasi) -->
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <label class="block text-sm font-bold text-blue-800 mb-2">Konfirmasi Password</label>
+                            <p class="text-xs text-blue-600 mb-3">Masukkan password Anda saat ini untuk menyimpan perubahan.</p>
+                            <input type="password" name="password_lama" required
+                                   class="w-full px-4 py-3 rounded-xl border border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white"
+                                   placeholder="Password Saat Ini">
+                        </div>
+
+                        <div class="flex gap-3 mt-8">
+                            <button type="button" onclick="closeEditModal()" class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Floating Modal untuk Edit Telepon -->
+            <div id="editPhoneModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 transform transition-all scale-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800">Edit Nomor Telepon</h3>
+                        <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <form action="api/profile_process.php" method="POST" class="space-y-5">
+                        <!-- Hidden Fields to keep other data -->
+                        <input type="hidden" name="nama" value="<?= htmlspecialchars($user['nama']) ?>">
+                        <input type="hidden" name="email" value="<?= htmlspecialchars($user['email']) ?>">
+
+                        <!-- No Telepon -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor Telepon</label>
+                            <input type="tel" name="no_telpon" value="<?= htmlspecialchars($user['no_telpon']) ?>" required
+                                   class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                   placeholder="08xxxxxxxxxx">
+                        </div>
+
+                        <div class="border-t border-gray-100 my-4"></div>
+
+                        <!-- Password Lama (Konfirmasi) -->
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <label class="block text-sm font-bold text-blue-800 mb-2">Konfirmasi Password</label>
+                            <p class="text-xs text-blue-600 mb-3">Masukkan password Anda saat ini untuk menyimpan perubahan.</p>
+                            <input type="password" name="password_lama" required
+                                   class="w-full px-4 py-3 rounded-xl border border-blue-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all bg-white"
+                                   placeholder="Password Saat Ini">
+                        </div>
+
+                        <div class="flex gap-3 mt-8">
+                            <button type="button" onclick="closeEditModal()" class="flex-1 px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all">
+                                Batal
+                            </button>
+                            <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
+                                Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -208,33 +283,42 @@ unset($_SESSION['msg_content']);
 
     <script>
         // ==============================================
-        // MODAL FUNCTIONS (Prepared for future implementation)
+        // MODAL FUNCTIONS
         // ==============================================
         
-        /**
-         * Open edit modal with specific field
-         * @param {string} field - Field to edit: 'nama', 'username', 'email', 'phone', or null for all
-         */
-        function openEditModal(field = null) {
-            // TODO: Implement modal functionality
-            console.log('Opening edit modal for:', field || 'all fields');
-            // const modal = document.getElementById('editModal');
-            // modal.classList.remove('hidden');
-            alert('Edit modal akan diimplementasikan nanti. Field: ' + (field || 'All'));
+        function openEditModal(type) {
+            // Close all first
+            closeEditModal();
+            
+            let modalId = '';
+            if(type === 'nama') modalId = 'editNameModal';
+            if(type === 'email') modalId = 'editEmailModal';
+            if(type === 'phone') modalId = 'editPhoneModal';
+            
+            if(modalId) {
+                const modal = document.getElementById(modalId);
+                if(modal) {
+                    modal.classList.remove('hidden');
+                    // Focus input
+                    const input = modal.querySelector('input:not([type="hidden"])');
+                    if(input) setTimeout(() => input.focus(), 100);
+                }
+            }
         }
         
-        /**
-         * Close edit modal
-         */
         function closeEditModal() {
-            const modal = document.getElementById('editModal');
-            modal.classList.add('hidden');
+            const modals = ['editNameModal', 'editEmailModal', 'editPhoneModal'];
+            modals.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
         }
         
         // Close modal when clicking outside
         document.addEventListener('click', function(event) {
-            const modal = document.getElementById('editModal');
-            if (event.target === modal) {
+            if (event.target.id === 'editNameModal' || 
+                event.target.id === 'editEmailModal' || 
+                event.target.id === 'editPhoneModal') {
                 closeEditModal();
             }
         });
@@ -256,11 +340,11 @@ unset($_SESSION['msg_content']);
                 if (hidden.style.display === 'none') {
                     hidden.style.display = 'inline';
                     revealed.style.display = 'none';
-                    revealText.textContent = 'Reveal';
+                    revealText.textContent = 'Perlihatkan';
                 } else {
                     hidden.style.display = 'none';
                     revealed.style.display = 'inline';
-                    revealText.textContent = 'Hide';
+                    revealText.textContent = 'Sembunyikan';
                 }
             } else if (type === 'phone') {
                 const hidden = document.getElementById('phoneHidden');
@@ -270,30 +354,15 @@ unset($_SESSION['msg_content']);
                 if (hidden.style.display === 'none') {
                     hidden.style.display = 'inline';
                     revealed.style.display = 'none';
-                    revealText.textContent = 'Reveal';
+                    revealText.textContent = 'Perlihatkan';
                 } else {
                     hidden.style.display = 'none';
                     revealed.style.display = 'inline';
-                    revealText.textContent = 'Hide';
+                    revealText.textContent = 'Sembunyikan';
                 }
             }
         }
-
-        // ==============================================
-        // REMOVE PHONE FUNCTION
-        // ==============================================
         
-        /**
-         * Remove phone number (with confirmation)
-         */
-        function removePhone() {
-            if (confirm('Apakah Anda yakin ingin menghapus nomor telepon?')) {
-                // TODO: Implement remove phone functionality
-                console.log('Removing phone number...');
-                alert('Fungsi remove phone akan diimplementasikan nanti');
-            }
-        }
-
         // ==============================================
         // ANIMATIONS
         // ==============================================

@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    // 3. Enkripsi Password (SHA256 sesuai database kamu)
-    $password_hash = hash('sha256', $password);
+    // 3. Enkripsi Password (Bcrypt - Standar Keamanan Modern)
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     // 4. Masukkan ke Database
     $query = "INSERT INTO akun_user (nama, email, password, no_telpon) 
