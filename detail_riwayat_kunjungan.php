@@ -20,63 +20,45 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+            <div class="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
 
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    <!-- Rumah Sakit -->
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <i class="fa-solid fa-hospital text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-1">Rumah Sakit</p>
-                                <p id="modalRsName" class="font-bold text-gray-800 text-sm"></p>
-                            </div>
+                <!-- Nama Pasien -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <i class="fa-solid fa-user text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">Nama Pasien</p>
+                            <p id="modalPasien" class="font-bold text-gray-800"></p>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Layanan -->
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <i class="fa-solid fa-stethoscope text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-1">Layanan</p>
-                                <p id="modalLayanan" class="font-bold text-gray-800 text-sm"></p>
-                            </div>
+                <!-- Rumah Sakit -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <i class="fa-solid fa-hospital text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">Rumah Sakit</p>
+                            <p id="modalRsName" class="font-bold text-gray-800"></p>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Nama Pasien -->
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <i class="fa-solid fa-user text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-1">Nama Pasien</p>
-                                <p id="modalPasien" class="font-bold text-gray-800 text-sm"></p>
-                            </div>
+                <!-- Layanan -->
+                <div class="bg-white p-5 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <i class="fa-solid fa-stethoscope text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 font-bold uppercase mb-1">Layanan</p>
+                            <p id="modalLayanan" class="font-bold text-gray-800"></p>
                         </div>
                     </div>
-
-                    <!-- NIK -->
-                    <div class="bg-white p-4 rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                                <i class="fa-solid fa-id-card text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 font-bold uppercase mb-1">NIK</p>
-                                <p id="modalNik" class="font-bold text-gray-800 text-sm"></p>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- Tanggal Kunjungan -->

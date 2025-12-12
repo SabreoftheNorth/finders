@@ -41,8 +41,6 @@ if(!$query) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/styles/style_user.css">
     
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
 
@@ -285,7 +283,6 @@ if(!$query) {
             document.getElementById('modalRsName').textContent = data.nama_rs;
             document.getElementById('modalLayanan').textContent = data.nama_layanan;
             document.getElementById('modalPasien').textContent = data.nama_pasien;
-            document.getElementById('modalNik').textContent = data.no_nik || '-';
             
             // Format tanggal
             const tanggal = new Date(data.tanggal_kunjungan);
