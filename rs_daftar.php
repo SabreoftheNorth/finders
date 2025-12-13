@@ -31,26 +31,60 @@ $result = mysqli_query($conn, $query_sql);
 
     <?php include 'includes/sidebar.php'; ?>
 
-    <main class="flex-1 h-full overflow-y-auto relative scroll-smooth p-6 lg:p-10">
-        <!-- Header Section -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-finders-blue">Temukan Rumah Sakit</h1>
-                <p class="text-gray-500">Pilih rumah sakit terbaik untuk kebutuhan kesehatan Anda.</p>
+    <main class="flex-1 h-full overflow-y-auto relative scroll-smooth bg-gray-50">
+        
+        <!-- Header Section dengan Background Image dan Gradient -->
+        <div class="relative w-full bg-gradient-to-br from-[#1e3a8a] to-[#1e40af] overflow-hidden">
+            <!-- Background Image -->
+            <div class="absolute inset-0">
+                <img src="assets/img/daftarrs_background.jpg" alt="Background" class="w-full h-full object-cover opacity-50">
             </div>
             
-            <!-- Search Bar -->
-            <form action="" method="GET" class="w-full md:w-1/3 relative">
-                <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" 
-                    placeholder="Cari nama RS atau wilayah..." 
-                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-finders-blue text-white px-4 py-1.5 rounded-lg text-sm hover:bg-blue-800 transition">
-                    Cari
-                </button>
-            </form>
+            <!-- Dark Overlay untuk Meningkatkan Kontras Teks -->
+            <div class="absolute inset-0 bg-gradient-to-br from-[#1e3a8a]/70 to-[#1e40af]/70"></div>
+            
+            <!-- Gradient Overlay untuk Transisi Smooth ke Body -->
+            <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-gray-50"></div>
+            
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 py-16 pb-24">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div class="flex-1">
+                        <!-- Breadcrumb Navigation -->
+                        <nav class="flex items-center gap-2 text-sm mb-8">
+                            <a href="index.php" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
+                                <i class="fa-solid fa-home text-lg"></i>
+                                <span class="font-medium">Beranda</span>
+                            </a>
+                            <i class="fa-solid fa-chevron-right text-white/60 text-xs"></i>
+                            <span class="text-white font-semibold">Daftar Rumah Sakit</span>
+                        </nav>
+
+                        <!-- Header Content -->
+                        <div>
+                            <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">Temukan Rumah Sakit</h1>
+                            <p class="text-white/90 text-lg lg:text-xl max-w-3xl leading-relaxed">
+                                Pilih rumah sakit terbaik untuk kebutuhan kesehatan Anda.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Bar -->
+                    <form action="" method="GET" class="w-full md:w-1/3 relative">
+                        <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" 
+                            placeholder="Cari nama RS atau wilayah..." 
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/20 transition shadow-lg">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-white/70"></i>
+                        <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white text-blue-700 px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-blue-50 transition shadow-md">
+                            Cari
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
 
+        <!-- Content Section -->
+        <div class="container mx-auto px-6 lg:px-12 py-8 pb-20">
+        
         <!-- Grid List RS -->
         <?php if (mysqli_num_rows($result) > 0): ?>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -78,13 +112,13 @@ $result = mysqli_query($conn, $query_sql);
                             </p>
                             
                             <div class="flex items-center gap-2 pt-4 border-t border-gray-100">
-                                <a href="booking.php?rs_id=<?= $row['id_rs'] ?>" class="flex-1 bg-finders-green hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl text-center transition uppercase tracking-wide shadow-sm flex items-center justify-center gap-2">
-                                    <i class="fa-regular fa-calendar-check"></i> Jadwalkan
-                                </a>
-                                
                                 <button onclick="openDetail(<?= $row['id_rs'] ?>)" class="flex-1 bg-blue-50 text-finders-blue text-xs font-bold py-2.5 rounded-xl hover:bg-[#1e3a8a] hover:text-white transition uppercase tracking-wide cursor-pointer shadow-sm">
                                     Detail
                                 </button>
+                                
+                                <a href="booking.php?rs_id=<?= $row['id_rs'] ?>" class="flex-1 bg-finders-green hover:bg-green-600 text-white text-xs font-bold py-2.5 rounded-xl text-center transition uppercase tracking-wide shadow-sm flex items-center justify-center gap-2">
+                                    buat Janji
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -99,6 +133,9 @@ $result = mysqli_query($conn, $query_sql);
                 <p class="text-gray-500">Coba kata kunci lain atau hubungi admin.</p>
             </div>
         <?php endif; ?>
+        
+        </div>
+        <!-- End Content Section -->
 
     </main>
 

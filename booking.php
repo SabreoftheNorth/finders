@@ -4,7 +4,7 @@ include 'config/db_connect.php';
 
 // Cek Login
 if(!isset($_SESSION['user_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // Simpan URL tujuan untuk redirect setelah login   
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: login.php");
     exit;
@@ -45,19 +45,23 @@ $query_rs = mysqli_query($conn, "SELECT * FROM data_rumah_sakit ORDER BY nama_rs
                  class="absolute inset-0 w-full h-full object-cover opacity-20">
             <div class="absolute inset-0 bg-gradient-to-t from-blue-900/90 via-transparent to-transparent"></div>
             
-            <div class="relative z-10 container mx-auto px-6 lg:px-12 h-full flex flex-col justify-center">
+            <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-gray-50"></div>
+            
+            <div class="relative z-10 container mx-auto px-6 lg:px-12 py-16 pb-24">
+                <!-- Breadcrumb Navigation -->
+                <nav class="flex items-center gap-2 text-sm mb-8">
+                    <a href="index.php" class="flex items-center gap-2 text-white/80 hover:text-white transition-colors">
+                        <i class="fa-solid fa-home text-lg"></i>
+                        <span class="font-medium">Beranda</span>
+                    </a>
+                    <i class="fa-solid fa-chevron-right text-white/60 text-xs"></i>
+                    <span class="text-white font-semibold">Booking Kunjungan</span>
+                </nav>
+
+                <!-- Header Content -->
                 <div>
-                    <div class="flex items-center gap-2 text-blue-200 mb-4">
-                        <a href="index.php" class="hover:text-white transition">
-                            <i class="fa-solid fa-home"></i> Beranda
-                        </a>
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                        <span class="text-white font-semibold">Booking Kunjungan</span>
-                    </div>
-                    <h1 class="text-4xl lg:text-5xl font-bold text-white leading-tight drop-shadow-lg mb-4">
-                        Pengajuan Kunjungan
-                    </h1>
-                    <p class="text-blue-100 text-lg max-w-2xl leading-relaxed">
+                    <h1 class="text-4xl lg:text-6xl font-bold text-white mb-6">Pengajuan Kunjungan</h1>
+                    <p class="text-white/90 text-lg lg:text-xl max-w-3xl leading-relaxed">
                         Jadwalkan kunjungan Anda dengan mudah. Lengkapi formulir di bawah untuk membuat janji temu dengan dokter spesialis di rumah sakit pilihan Anda.
                     </p>
                 </div>

@@ -116,7 +116,7 @@ $jumlah_data = mysqli_num_rows($query);
                                 <div class="grid grid-cols-2 gap-2 mt-5">
                                     <button onclick="openDetail(<?= $d['id_rs'] ?>)" 
                                             class="px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-xs font-bold hover:border-finders-blue hover:text-finders-blue transition">
-                                        Detail RS
+                                        Detail
                                     </button>
                                     
                                     <a href="booking.php?rs_id=<?= $d['id_rs'] ?>&layanan_id=<?= $d['id_layanan'] ?>" 
