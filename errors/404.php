@@ -44,10 +44,6 @@ if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/admin/') 
         </p>
 
         <div class="space-y-3">
-            <a href="<?php echo $home_url; ?>" class="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-blue-200">
-                <i class="fa-solid fa-house mr-2"></i> Kembali ke Beranda
-            </a>
-            
             <button onclick="window.history.back()" class="inline-block w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-6 rounded-xl transition">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Halaman Sebelumnya
             </button>
