@@ -84,6 +84,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // 3. Cek di tabel RUMAH SAKIT (Mitra RS)
+    $query_rs = "SELECT ars.*, rs.nama_rs, rs.id_rs 
+                 FROM akun_rumah_sakit ars 
+                 JOIN data_rumah_sakit rs ON ars.id_rs = rs.id_rs 
+                 WHERE (ars.email = '$identifier' OR ars.username = '$identifier') 
+                 AND ars.status_akun = 'aktif'";
+    $result_rs = mysqli_query($conn, $query_rs);
+
+    if (mysqli_num_rows($result_rs) > 0) {
+        $data = mysqli_fetch_assoc($result_rs);
+        
+        // Verifikasi password dengan bcrypt
+        if (password_verify($password, $data['password'])) {
+            // Login Berhasil sebagai Mitra RS
+            
+            // Set Session
+            $_SESSION['mitra_id'] = $data['id_rs_akun'];
+            $_SESSION['mitra_name'] = $data['username'];
+            $_SESSION['id_rs'] = $data['id_rs'];
+            $_SESSION['nama_rs'] = $data['nama_rs'];
+            $_SESSION['role'] = 'mitra';
+            
+            // Redirect ke halaman yang dituju sebelumnya (jika ada dan halaman mitra)
+            if(isset($_SESSION['redirect_after_login'])) {
+                $redirect_url = $_SESSION['redirect_after_login'];
+                
+                // Cek apakah redirect URL adalah halaman mitra_rs
+                if(strpos($redirect_url, '/mitra_rs/') !== false || strpos($redirect_url, 'mitra_rs/') !== false) {
+                    unset($_SESSION['redirect_after_login']); // Hapus session redirect
+                    
+                    // Jika URL sudah lengkap dengan path /finders/, gunakan langsung
+                    if(strpos($redirect_url, '/finders/') === 0) {
+                        // URL sudah lengkap, ambil bagian setelah /finders/
+                        $redirect_url = str_replace('/finders/', '', $redirect_url);
+                        header("Location: ../../$redirect_url");
+                    } else {
+                        // URL relatif, gunakan langsung
+                        header("Location: ../../$redirect_url");
+                    }
+                    exit;
+                }
+            }
+            
+            // Default redirect ke mitra dashboard
+            header("Location: ../../mitra_rs/index.php");
+            exit;
+        }
+    }
+
     // Jika Gagal Login
     echo "<script>
         alert('Email atau Password salah!'); 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Dec 12, 2025 at 11:29 AM
+-- Generation Time: Dec 13, 2025 at 04:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -63,8 +63,8 @@ CREATE TABLE `akun_rumah_sakit` (
 --
 
 INSERT INTO `akun_rumah_sakit` (`id_rs_akun`, `id_rs`, `username`, `password`, `email`, `status_akun`, `role_rs`) VALUES
-(1, 1, 'rs_fatma', 'rs_pw', 'contact@fatmawati.id', 'aktif', 'rs'),
-(2, 2, 'rs_rcm', 'rs_pw', 'contact@rscm.id', 'aktif', 'rs');
+(1, 1, 'admin_fatmawati', '$2y$12$y4P/tZbqe.SDqG7ZHSfBtO0c7rOWnt.52EDHlhG97asmXZlVXGWwu', 'admin@fatmawati.id', 'aktif', 'rs'),
+(2, 2, 'admin_rscm', '$2y$12$y4P/tZbqe.SDqG7ZHSfBtO0c7rOWnt.52EDHlhG97asmXZlVXGWwu', 'admin@rscm.id', 'aktif', 'rs');
 
 -- --------------------------------------------------------
 
@@ -160,7 +160,6 @@ CREATE TABLE `data_penjadwalan` (
   `id_user` int(11) NOT NULL,
   `id_rs` int(11) NOT NULL,
   `id_layanan` int(11) NOT NULL,
-  `no_nik` varchar(50) DEFAULT NULL,
   `nama_pasien` varchar(150) NOT NULL,
   `tanggal_kunjungan` date NOT NULL,
   `jam_mulai` time DEFAULT NULL,
@@ -175,9 +174,10 @@ CREATE TABLE `data_penjadwalan` (
 -- Dumping data for table `data_penjadwalan`
 --
 
-INSERT INTO `data_penjadwalan` (`id_penjadwalan`, `id_user`, `id_rs`, `id_layanan`, `no_nik`, `nama_pasien`, `tanggal_kunjungan`, `jam_mulai`, `jam_selesai`, `status`, `catatan`, `dibuat_pada`, `queue_number`) VALUES
-(1, 1, 1, 1, '1234567890123456', 'Budi Santoso', '2025-12-04', NULL, NULL, 'Dikonfirmasi', 'Catatan contoh', '2025-12-03 14:36:32', 'F-001'),
-(4, 1, 1, 2, '3173051234567890', 'Budi Santoso', '2025-12-20', NULL, NULL, 'Menunggu', 'Pemeriksaan lanjutan onkologi', '2025-12-10 11:19:37', 'F-004');
+INSERT INTO `data_penjadwalan` (`id_penjadwalan`, `id_user`, `id_rs`, `id_layanan`, `nama_pasien`, `tanggal_kunjungan`, `jam_mulai`, `jam_selesai`, `status`, `catatan`, `dibuat_pada`, `queue_number`) VALUES
+(1, 1, 1, 1, 'Budi Santoso', '2025-12-04', NULL, NULL, 'Dikonfirmasi', 'Catatan contoh', '2025-12-03 14:36:32', 'F-001'),
+(4, 1, 1, 2, 'Budi Santoso', '2025-12-20', NULL, NULL, 'Menunggu', 'Pemeriksaan lanjutan onkologi', '2025-12-10 11:19:37', 'F-004'),
+(5, 1, 1, 1, 'Budi Santoso', '2025-12-12', '02:00:00', '04:00:00', 'Menunggu', '', '2025-12-12 19:18:10', NULL);
 
 -- --------------------------------------------------------
 
@@ -302,7 +302,7 @@ ALTER TABLE `data_layanan_rs`
 -- AUTO_INCREMENT for table `data_penjadwalan`
 --
 ALTER TABLE `data_penjadwalan`
-  MODIFY `id_penjadwalan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_penjadwalan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `data_rumah_sakit`
