@@ -84,7 +84,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
 
-                <a href="kelola_kunjungan.php" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+                <a href="kelola_kunjungan.php?tanggal=<?= $hari_ini ?>" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Pasien Hari Ini</p>
@@ -100,7 +100,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                     </div>
                 </a>
                 
-                <a href="kelola_kunjungan.php" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+                <a href="kelola_kunjungan.php?status=Menunggu" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Perlu Konfirmasi</p>
@@ -127,12 +127,12 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                         </div>
                     </div>
                     <div class="pt-4 border-t border-gray-50 flex items-center justify-between">
-                        <span class="text-xs text-gray-400">Poli & Fasilitas</span>
+                        <span class="text-xs text-gray-400">Layanan Yang Sedang Aktif</span>
                         <i class="fa-solid fa-arrow-right text-xs text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity"></i>
                     </div>
                 </a>
 
-                <a href="kelola_kunjungan.php" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
+                <a href="kelola_kunjungan.php?status=Selesai" class="bg-white p-6 rounded-2xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer">
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <p class="text-sm font-medium text-gray-500">Total Pasien Selesai</p>

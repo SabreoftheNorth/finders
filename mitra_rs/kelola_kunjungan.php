@@ -103,6 +103,40 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                 padding-right: 1.5rem;
             }
         }
+
+        /* Hide date input calendar icon and placeholder */
+        #dateInput::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #dateInput::-webkit-datetime-edit {
+            opacity: 0;
+        }
+        
+        #dateInput::-webkit-datetime-edit-fields-wrapper {
+            opacity: 0;
+        }
+        
+        #dateInput::-webkit-datetime-edit-text {
+            opacity: 0;
+        }
+        
+        #dateInput::-webkit-datetime-edit-month-field {
+            opacity: 0;
+        }
+        
+        #dateInput::-webkit-datetime-edit-day-field {
+            opacity: 0;
+        }
+        
+        #dateInput::-webkit-datetime-edit-year-field {
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden text-gray-800">
@@ -123,8 +157,12 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                 <form method="GET" class="flex flex-wrap gap-4 items-end">
                     <div class="flex-1 min-w-[200px]">
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal</label>
-                        <input type="date" name="tanggal" value="<?= $filter_tanggal ?>" 
-                               class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                        <div class="relative">
+                            <input type="date" name="tanggal" id="dateInput" value="<?= $filter_tanggal ?>" 
+                                   class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
+                            <input type="text" id="dateDisplay" placeholder="Pilih tanggal (dd-mm-yyyy)" readonly
+                                   class="absolute inset-0 w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl pointer-events-none text-sm text-gray-700 z-10">
+                        </div>
                     </div>
 
                     <div class="flex-1 min-w-[200px]">
@@ -347,6 +385,38 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
     </div>
 
     <script>
+        // Format tanggal dd-mm-yyyy untuk input date
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('dateInput');
+            const dateDisplay = document.getElementById('dateDisplay');
+            
+            // Fungsi untuk format tanggal dari yyyy-mm-dd ke dd-mm-yyyy
+            function formatDateToDDMMYYYY(dateString) {
+                if (!dateString) return '';
+                const [year, month, day] = dateString.split('-');
+                return `${day}-${month}-${year}`;
+            }
+            
+            // Set nilai awal jika ada
+            if (dateInput.value) {
+                dateDisplay.value = formatDateToDDMMYYYY(dateInput.value);
+            }
+            
+            // Event ketika tanggal dipilih
+            dateInput.addEventListener('change', function() {
+                if (this.value) {
+                    dateDisplay.value = formatDateToDDMMYYYY(this.value);
+                } else {
+                    dateDisplay.value = '';
+                }
+            });
+            
+            // Event ketika dateDisplay diklik, trigger date picker
+            dateDisplay.parentElement.addEventListener('click', function() {
+                dateInput.showPicker ? dateInput.showPicker() : dateInput.focus();
+            });
+        });
+    
         function openModalKonfirmasi(id, nama) {
             document.getElementById('konfirmId').value = id;
             document.getElementById('konfirmNama').innerText = nama;

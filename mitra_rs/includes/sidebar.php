@@ -22,12 +22,12 @@
                 <img src="../assets/img/FindeRS_Logo.png" alt="FindeRS Logo" class="w-full h-full object-contain">
             </div>
             <div class="overflow-hidden whitespace-nowrap max-w-0 opacity-0 group-hover/sidebar:max-w-xs group-hover/sidebar:opacity-100 transition-all duration-500 ease-in-out">
-                <h1 class="text-lg font-bold text-gray-800">Mitra RS</h1>
-                <p class="text-xs text-green-600 font-semibold">Panel Admin</p>
+                <h1 class="text-lg font-bold text-gray-800">FindeRS</h1>
+                <p class="text-xs text-green-600 font-semibold">Panel Admin RS</p>
             </div>
             <!-- Tooltip -->
             <div class="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover/item:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50 group-hover/sidebar:hidden">
-                Mitra RS
+                FindeRS
                 <div class="absolute top-1/2 -left-1 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
             </div>
         </div>
