@@ -61,8 +61,8 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
     
     <?php include 'includes/sidebar_admin.php'; ?>
 
-    <main class="flex-1 overflow-y-auto">
-        <div class="p-6">
+    <main class="flex-1 overflow-y-auto flex flex-col">
+        <div class="p-6 flex-1">
             
             <?php include 'includes/header_admin.php'; ?>
 
@@ -251,6 +251,7 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
             </div>
 
         </div>
+        
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
