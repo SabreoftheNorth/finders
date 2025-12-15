@@ -257,29 +257,40 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
 
     <!-- Modal Overlay -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
-        <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+        <div id="modalContent" class="bg-white w-[90%] max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl relative flex flex-col">
+            <button onclick="closeModal()" class="absolute top-6 right-6 z-[1000] text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-            <div id="modalBody" class="p-6">
-                Memuat...
+            <div id="modalBody" class="overflow-y-auto flex-1 p-8">
+                <div class="flex items-center justify-center py-12">
+                    <i class="fa-solid fa-spinner fa-spin text-3xl text-blue-600"></i>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
     function openModal(url) {
+        console.log('Opening modal with URL:', url); // Debug
         document.getElementById("modalOverlay").classList.remove("hidden");
         let target = document.getElementById("modalBody");
         target.innerHTML = '<div class="flex items-center justify-center py-12"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-600"></i></div>';
         
         fetch(url)
-            .then(response => response.text())
+            .then(response => {
+                console.log('Response status:', response.status); // Debug
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.text();
+            })
             .then(data => {
+                console.log('Data received, length:', data.length); // Debug
                 target.innerHTML = data;
             })
             .catch(err => {
-                target.innerHTML = '<div class="text-red-500 text-center py-8">Gagal memuat data.</div>';
+                console.error('Fetch error:', err); // Debug
+                target.innerHTML = '<div class="text-red-500 text-center py-8"><i class="fa-solid fa-exclamation-triangle text-4xl mb-3"></i><p class="font-semibold">Gagal memuat data</p><p class="text-sm mt-2">' + err.message + '</p></div>';
             });
     }
 
@@ -288,7 +299,7 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
     }
 
     function viewDetail(id) {
-        window.open('../rs_detail.php?id=' + id, '_blank');
+        openModal('rs_detail.php?id=' + id);
     }
 
     function editRS(id) {

@@ -139,7 +139,7 @@ $wilayah_options = [
         </div>
 
         <!-- Info Box -->
-        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+        <div class="bg-blue-50 p-4 rounded-lg">
             <div class="flex items-start gap-3">
                 <i class="fa-solid fa-info-circle text-blue-600 mt-0.5"></i>
                 <div class="text-sm text-blue-800">
@@ -156,16 +156,18 @@ $wilayah_options = [
 
         <!-- Buttons -->
         <div class="flex gap-3 pt-4">
-            <button type="submit" 
-                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-save"></i>
-                <?= $mode == 'edit' ? 'Simpan Perubahan' : 'Tambah Rumah Sakit' ?>
-            </button>
             <button type="button" onclick="window.parent.closeModal()" 
                     class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2">
                 <i class="fa-solid fa-times"></i>
                 Batal
             </button>
+
+            <button type="submit" 
+                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-save"></i>
+                <?= $mode == 'edit' ? 'Simpan Perubahan' : 'Tambah Rumah Sakit' ?>
+            </button>
+            
         </div>
 
     </form>
