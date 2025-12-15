@@ -45,7 +45,7 @@ $page_subtitle = "Informasi detail instansi Anda yang tampil di aplikasi.";
                 </div>
             </header>
 
-            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-8 rounded-r-xl shadow-sm flex items-start gap-3">
+            <div class="bg-blue-50 p-4 mb-8 rounded-r-xl shadow-sm flex items-start gap-3">
                 <div class="p-1"><i class="fa-solid fa-circle-info text-blue-600 text-lg"></i></div>
                 <div>
                     <h4 class="font-bold text-blue-800 text-sm">Pemberitahuan</h4>
@@ -121,7 +121,7 @@ $page_subtitle = "Informasi detail instansi Anda yang tampil di aplikasi.";
                             </div>
 
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Deskripsi Singkat</label>
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Deskripsi</label>
                                 <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 text-gray-600 leading-relaxed text-sm text-justify">
                                     <?= nl2br(htmlspecialchars($rs['deskripsi'])) ?>
                                 </div>

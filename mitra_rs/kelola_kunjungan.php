@@ -160,7 +160,7 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                         <div class="relative">
                             <input type="date" name="tanggal" id="dateInput" value="<?= $filter_tanggal ?>" 
                                    class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm">
-                            <input type="text" id="dateDisplay" placeholder="Pilih tanggal (dd-mm-yyyy)" readonly
+                            <input type="text" id="dateDisplay" placeholder="Pilih tanggal" readonly
                                    class="absolute inset-0 w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl pointer-events-none text-sm text-gray-700 z-10">
                         </div>
                     </div>
