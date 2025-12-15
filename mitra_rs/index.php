@@ -156,7 +156,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                         <h3 class="font-bold text-gray-800 text-lg">Pendaftaran Terbaru</h3>
                         <p class="text-xs text-gray-500 mt-1">5 pasien terakhir yang mendaftar</p>
                     </div>
-                    <a href="jadwal_kelola.php" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors">
+                    <a href="kelola_kunjungan.php" class="text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors">
                         Lihat Semua
                     </a>
                 </div>
@@ -165,11 +165,10 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold tracking-wider">
                             <tr>
-                                <th class="px-8 py-4">Pasien</th>
-                                <th class="px-6 py-4">Layanan</th>
-                                <th class="px-6 py-4">Jadwal</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4 text-center">Aksi</th>
+                                <th class="px-8 py-4 text-center">Pasien</th>
+                                <th class="px-6 py-4 text-center">Layanan</th>
+                                <th class="px-6 py-4 text-center">Jadwal</th>
+                                <th class="px-6 py-4 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 text-sm text-gray-600">
@@ -193,7 +192,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                                                 <span><?= htmlspecialchars($row['nama_layanan']) ?></span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-4 text-center">
                                             <div class="flex flex-col">
                                                 <span class="font-medium text-gray-700"><?= date('d M Y', strtotime($row['tanggal_kunjungan'])) ?></span>
                                                 <span class="text-xs text-gray-400">
@@ -201,7 +200,7 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4">
+                                        <td class="px-6 py-4 text-center">
                                             <?php 
                                                 $status_classes = [
                                                     'Menunggu' => 'bg-yellow-50 text-yellow-700 border border-yellow-200',
@@ -214,11 +213,6 @@ $page_subtitle = "Ringkasan aktivitas rumah sakit Anda";
                                             <span class="px-3 py-1 rounded-full text-xs font-semibold <?= $class ?>">
                                                 <?= $row['status'] ?>
                                             </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-center">
-                                            <a href="jadwal_kelola.php?id=<?= $row['id_penjadwalan'] ?>" class="text-gray-400 hover:text-blue-600 transition p-2 rounded-lg hover:bg-blue-50 inline-block" title="Kelola">
-                                                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                                            </a>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>

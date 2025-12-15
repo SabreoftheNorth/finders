@@ -206,7 +206,7 @@ $page_subtitle = "Verifikasi dan atur antrean pasien.";
                                 <th class="px-4 xl:px-6 py-4 text-center w-36">Layanan</th>
                                 <th class="px-4 xl:px-6 py-4 text-center w-20">Antrean</th>
                                 <th class="px-4 xl:px-6 py-4 text-center w-32">Status</th>
-                                <th class="px-4 xl:px-6 py-4 text-center w-36">Aksi</th>
+                                <th class="px-4 xl:px-6 py-4 text-center w-36">Kelola</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50 text-sm text-gray-600">

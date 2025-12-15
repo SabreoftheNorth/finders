@@ -219,7 +219,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             </div>
 
             <div class="flex-1 overflow-y-auto p-6 bg-white custom-scrollbar">
-                <form id="formJadwal" onsubmit="saveJadwal(event)">
+                <form id="formJadwal" method="post" onsubmit="saveJadwal(event)">
                     <input type="hidden" name="id_layanan" id="modalIdLayanan">
                     
                     <div class="space-y-4">
@@ -256,16 +256,16 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                         </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3 -mx-6 -mb-6 mt-6">
+                        <button type="button" onclick="closeModal('modalJadwal')" class="px-6 py-2.5 border border-gray-300 text-gray-600 font-semibold rounded-xl hover:bg-white transition">Batal</button>
+                        <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                            <i class="fa-solid fa-save"></i> Simpan Jadwal
+                        </button>
+                    </div>
                 </form>
             </div>
 
-            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
-                <button onclick="closeModal('modalJadwal')" class="px-6 py-2.5 border border-gray-300 text-gray-600 font-semibold rounded-xl hover:bg-white transition">Batal</button>
-                <button onclick="document.getElementById('formJadwal').dispatchEvent(new Event('submit'))" 
-                        class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition flex items-center gap-2">
-                    <i class="fa-solid fa-save"></i> Simpan Jadwal
-                </button>
-            </div>
         </div>
     </div>
 
@@ -283,7 +283,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                 </button>
             </div>
 
-            <form id="formTambahLayanan" onsubmit="simpanLayananBaru(event)">
+            <form id="formTambahLayanan" method="post" onsubmit="simpanLayananBaru(event)">
                 <div class="p-6 space-y-4">
                     
                     <div>
@@ -370,7 +370,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             btnSimpan.disabled = true;
             btnBatal.disabled = true;
 
-            fetch('../api/mitra/tambah_layanan.php', { 
+            fetch('/finders/api/mitra/tambah_layanan.php', { 
                 method: 'POST',
                 body: formData
             })
@@ -423,7 +423,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             formData.append('id_layanan', id);
             formData.append('status_baru', status);
 
-            fetch('../api/mitra/update_status_layanan.php', { method: 'POST', body: formData })
+            fetch('/finders/api/mitra/update_status_layanan.php', { method: 'POST', body: formData })
                 .then(response => {
                     if (!response.ok) throw new Error('Network error');
                     return response.json();
@@ -486,7 +486,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             formContent.appendChild(loadingOverlay);
 
             // Fetch Data Jadwal dari API baru
-            fetch('../api/mitra/get_jadwal_layanan.php?id_layanan=' + id)
+            fetch('/finders/api/mitra/get_jadwal_layanan.php?id_layanan=' + id)
                 .then(res => {
                     if (!res.ok) throw new Error('Network error');
                     return res.json();
@@ -547,8 +547,15 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
 
         function saveJadwal(e) {
             e.preventDefault();
+            console.log('saveJadwal called, event:', e);
+            
             const form = e.target;
             const formData = new FormData(form);
+            
+            console.log('Form data entries:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
             
             // Validasi minimal 1 hari dipilih
             const checkedDays = form.querySelectorAll('input[type="checkbox"]:checked').length;
@@ -556,6 +563,8 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                 showNotification('Pilih minimal satu hari untuk jadwal', 'error');
                 return;
             }
+            
+            console.log('Sending POST request to /finders/api/mitra/save_jadwal.php');
             
             // Tampilkan loading state
             const modal = document.getElementById('modalJadwal');
@@ -567,11 +576,12 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             btnSimpan.disabled = true;
             btnBatal.disabled = true;
 
-            fetch('../api/mitra/save_jadwal.php', { 
+            fetch('/finders/api/mitra/save_jadwal.php', { 
                 method: 'POST',
                 body: formData
             })
             .then(res => {
+                console.log('Response received:', res);
                 if (!res.ok) throw new Error('Network error');
                 return res.json();
             })
