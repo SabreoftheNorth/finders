@@ -111,7 +111,7 @@ $wilayah_options = [
             <textarea name="deskripsi" required rows="4"
                       placeholder="Deskripsi singkat tentang rumah sakit, fasilitas, atau keunggulan..."
                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"><?= htmlspecialchars($data['deskripsi']) ?></textarea>
-            <p class="text-xs text-gray-500 mt-1">Minimal 50 karakter</p>
+            <p class="text-xs text-gray-500 mt-1">Tidak ada batasan karakter</p>
         </div>
 
         <!-- Upload Foto -->

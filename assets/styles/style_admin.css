@@ -1,0 +1,236 @@
+/* Admin styles, mungkin karena kebanyakan inline hampir tidak ada efek apa-apa tapi apabila ingin melihat style apa yang diambil... maka ini dia. */
+
+:root{
+  --admin-bg:#f6f8fb;
+  --panel-bg:#ffffff;
+  --muted:#6b7280;
+  --primary:#2563eb; /* biru-600 */
+  --primary-600:#1d4ed8; /* blue-700 */
+  --accent:#06b6d4; /* teal-400 */
+  --success:#16a34a;
+  --danger:#dc2626;
+  --border:rgba(15,23,42,0.06);
+  --shadow:0 6px 18px rgba(15,23,42,0.06);
+  --radius:8px;
+  --radius-sm:6px;
+  --glass:linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55));
+  --max-width:1200px;
+  --mono-font: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Helvetica Neue", monospace;
+}
+
+body[class*="admin"], .admin, .admin-page, #admin, #admin-panel, .admin-container {
+  background: var(--admin-bg) !important;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+}
+
+.admin .container, .admin-container, .admin-page .container {
+  max-width: var(--max-width);
+  margin: 24px auto;
+  padding: 20px;
+}
+
+/* Cards / panels */
+.admin .card, .panel, .admin-card, .admin-panel, .box {
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.admin .card h3, .admin .panel h3, .admin .card .title {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  font-weight:600;
+  color: #0b1220;
+}
+
+/* Header / topbar */
+.admin .topbar, .admin-header, header.admin-header {
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.admin .brand {
+  font-weight:700;
+  color:var(--primary-600);
+  font-size:1.05rem;
+}
+
+.admin .topbar .meta {
+  margin-left:auto;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+/* Sidebar */
+.admin .sidebar, .admin-sidebar, nav.admin-nav {
+  background: transparent;
+  min-width: 220px;
+  padding: 12px;
+}
+
+.admin .sidebar a, .admin-sidebar a, nav.admin-nav a {
+  display:block;
+  padding:10px 12px;
+  border-radius:6px;
+  color: #0b1220;
+  text-decoration:none;
+  margin-bottom:6px;
+  font-weight:500;
+}
+
+.admin .sidebar a:hover, .admin-sidebar a:hover, nav.admin-nav a:hover {
+  background: rgba(37,99,235,0.06);
+  color:var(--primary-600);
+}
+
+.admin .sidebar a.active, .admin-sidebar a.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Content area */
+.admin .content, .admin-main, .admin-body {
+  padding: 12px 18px;
+  min-height: 360px;
+}
+
+/* Tables */
+.admin table, .admin-table, table.admin-list {
+  width:100%;
+  border-collapse:collapse;
+  background:transparent;
+  overflow:hidden;
+  border-radius:var(--radius-sm);
+}
+
+.admin table thead th {
+  text-align:left;
+  padding:12px 10px;
+  font-size:0.9rem;
+  color:var(--muted);
+  border-bottom:1px solid var(--border);
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,250,0.6));
+}
+
+.admin table tbody td {
+  padding:12px 10px;
+  border-bottom:1px solid rgba(15,23,42,0.03);
+  vertical-align:middle;
+}
+
+.admin table tr:hover td {
+  background: rgba(15,23,42,0.02);
+}
+
+/* Forms */
+.admin input[type="text"],
+.admin input[type="search"],
+.admin input[type="email"],
+.admin input[type="password"],
+.admin textarea,
+.admin select,
+.admin .select,
+.admin .form-control {
+  width:100%;
+  padding:10px 12px;
+  border-radius:6px;
+  border:1px solid rgba(15,23,42,0.08);
+  background: #fff;
+  font-size:0.95rem;
+  transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+.admin input:focus,
+.admin textarea:focus,
+.admin select:focus{
+  outline:none;
+  border-color: var(--primary-600);
+  box-shadow: 0 4px 18px rgba(37,99,235,0.08);
+}
+
+.form-row {
+  display:flex;
+  gap:12px;
+}
+
+.form-row > * { flex:1 }
+
+/* tombol */
+.admin .btn, .admin button, button.admin-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:6px;
+  border:1px solid transparent;
+  background:var(--primary);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition: transform .06s ease, box-shadow .08s ease, filter .08s ease;
+}
+
+.admin .btn.secondary {
+  background:transparent;
+  color:var(--primary-600);
+  border-color: rgba(37,99,235,0.12);
+}
+
+.admin .btn.ghost {
+  background:transparent;
+  color:var(--muted);
+  border-color:transparent;
+}
+
+.admin .btn:active { transform: translateY(1px) }
+
+/* utilitas */
+.text-muted { color:var(--muted) }
+.small { font-size:0.85rem }
+.kv { display:flex; gap:6px; align-items:center }
+.kv .label { color:var(--muted); min-width:120px }
+.kv .value { font-weight:600 }
+
+/* label */
+.badge { display:inline-block; padding:5px 8px; border-radius:999px; font-size:0.78rem; background:rgba(15,23,42,0.04); color:var(--muted); }
+.badge.success { background: rgba(16,185,129,0.12); color:var(--success) }
+.badge.danger { background: rgba(220,38,38,0.08); color:var(--danger) }
+
+/* ALERT */
+.alert { padding:10px 12px; border-radius:6px; border:1px solid var(--border); margin-bottom:12px; }
+.alert.info { background: linear-gradient(180deg, rgba(6,182,212,0.04), rgba(6,182,212,0.02)); border-color: rgba(6,182,212,0.08); color:var(--accent) }
+.alert.success { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.08); color:var(--success) }
+.alert.warn { background: rgba(249,115,22,0.04); border-color: rgba(249,115,22,0.08); color:#b45309 }
+
+.form-actions { display:flex; gap:8px; align-items:center; justify-content:flex-end; }
+
+.hr { height:1px; background:var(--border); margin:12px 0; border-radius:2px }
+.center { text-align:center }
+.text-right { text-align:right }
+
+@media (max-width:900px){
+  .admin .container, .admin-container { padding:12px }
+  .admin .sidebar { display:none }
+  .admin .content { padding:8px }
+  .form-row { flex-direction:column }
+}
+
+a:focus, button:focus, input:focus, select:focus, textarea:focus{ outline: 3px solid rgba(37,99,235,0.12); outline-offset:2px }
+
+.admin .field-help { font-size:0.85rem; color:var(--muted); margin-top:6px }
+
+.admin code, .admin kbd { background: rgba(15,23,42,0.04); padding:3px 6px; border-radius:4px; font-family: var(--mono-font); font-size:0.9rem }
+
+:not(body[class*="admin"]):not(.admin):not(.admin-page):not(#admin):not(#admin-panel) .admin-only, .admin .admin-only { display:block }

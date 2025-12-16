@@ -91,6 +91,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
     <title>Detail Penjadwalan #<?= $data['id_penjadwalan'] ?> - Admin FindeRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/styles/style_admin.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
