@@ -33,12 +33,19 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $estimasi_jam = mysqli_real_escape_string($conn, $_POST['estimasi_jam']);
     $catatan_admin = mysqli_real_escape_string($conn, $_POST['catatan_admin']);
     
+    // Build catatan (append jika ada)
+    $catatan_update = $data['catatan'];
+    if(!empty($catatan_admin)) {
+        $catatan_update .= "\n[Admin] " . $catatan_admin;
+    }
+    
     $update_query = "UPDATE data_penjadwalan SET 
-                     status = '$status_baru',
-                     queue_number = '$queue_number',
-                     estimasi_jam = '$estimasi_jam',
-                     catatan = CONCAT(catatan, '\n[Admin] $catatan_admin')
-                     WHERE id_penjadwalan = '$id_jadwal'";
+        status = '$status_baru',
+        queue_number = " . (!empty($queue_number) ? "'$queue_number'" : "NULL") . ",
+        estimasi_jam = " . (!empty($estimasi_jam) ? "'$estimasi_jam'" : "NULL") . ",
+        catatan = '$catatan_update',
+        diperbarui_pada = NOW()
+        WHERE id_penjadwalan = '$id_jadwal'";
     
     if(mysqli_query($conn, $update_query)) {
         echo '<script>
@@ -88,7 +95,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
             <div>
                 <label class="text-xs text-gray-600 font-semibold uppercase">NIK</label>
-                <p class="text-sm font-medium text-gray-800"><?= $data['no_nik'] ?: '-' ?></p>
+                <p class="text-sm font-medium text-gray-800"><?= $data['no_nik'] ?? '-' ?></p>
             </div>
             <div>
                 <label class="text-xs text-gray-600 font-semibold uppercase">Rumah Sakit</label>
@@ -116,14 +123,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Form Update Status -->
     <form method="POST" class="space-y-6">
-        
+        <!-- Hidden ID -->
+        <input type="hidden" name="id_penjadwalan" value="<?= $id_jadwal ?>">
         <!-- Status Jadwal -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Status Jadwal <span class="text-red-500">*</span>
             </label>
-            <select name="status" required 
-                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <select name="status" required
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="Menunggu" <?= $data['status'] == 'Menunggu' ? 'selected' : '' ?>>
                     Menunggu Konfirmasi
                 </option>
@@ -139,27 +147,27 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             </select>
         </div>
 
-        <!-- Nomor Antrian (jika dikonfirmasi) -->
+        <!-- Nomor Antrian & Estimasi Jam -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                     Nomor Antrian
                 </label>
                 <input type="text" name="queue_number" 
-                       value="<?= htmlspecialchars($data['queue_number']) ?>"
-                       placeholder="Contoh: A-001"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    value="<?= htmlspecialchars($data['queue_number']) ?>"
+                    placeholder="Contoh: A-001"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <p class="text-xs text-gray-500 mt-1">Kosongkan jika belum dikonfirmasi</p>
             </div>
-
+            
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
                     Estimasi Jam
                 </label>
                 <input type="text" name="estimasi_jam" 
-                       value="<?= htmlspecialchars($data['estimasi_jam']) ?>"
-                       placeholder="Contoh: 08:00 - 10:00"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    value="<?= htmlspecialchars($data['estimasi_jam'] ?? '') ?>"
+                    placeholder="Contoh: 08:00 - 10:00"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <p class="text-xs text-gray-500 mt-1">Kosongkan jika belum dikonfirmasi</p>
             </div>
         </div>
@@ -169,25 +177,24 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Catatan Admin (Opsional)
             </label>
-            <textarea name="catatan_admin" rows="3"
-                      placeholder="Tambahkan catatan untuk pasien (misalnya: persiapan khusus, dokumen yang dibawa, dll)"
-                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+            <textarea name="catatan_admin" rows="3" 
+                placeholder="Tambahkan catatan untuk pasien (misalnya: persiapan khusus, dokumen yang dibawa, dll)"
+                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
         </div>
-
+        
         <!-- Buttons -->
         <div class="flex gap-3 pt-4">
             <button type="submit" 
-                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg">
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg">
                 <i class="fa-solid fa-save mr-2"></i>
                 Simpan Perubahan
             </button>
-            <button type="button" onclick="window.parent.closeModal()" 
-                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition">
+            <button type="button" onclick="window.parent.closeModal()"
+                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition">
                 <i class="fa-solid fa-times mr-2"></i>
                 Batal
             </button>
         </div>
-
     </form>
 
 </div>

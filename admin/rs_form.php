@@ -194,7 +194,7 @@ document.querySelector('input[type="file"]').addEventListener('change', function
     }
 });
 
-// Validasi form sebelum submit
+/* Validasi form sebelum submit
 document.querySelector('form').addEventListener('submit', function(e) {
     const deskripsi = document.querySelector('textarea[name="deskripsi"]').value;
     if(deskripsi.length < 50) {
@@ -202,5 +202,5 @@ document.querySelector('form').addEventListener('submit', function(e) {
         alert('Deskripsi minimal 50 karakter!');
         return false;
     }
-});
+}); */
 </script>

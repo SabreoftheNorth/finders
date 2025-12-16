@@ -68,12 +68,12 @@ if($mode == 'tambah') {
     $no_telpon = mysqli_real_escape_string($conn, $_POST['no_telpon']);
     $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
     
-    // Validasi deskripsi minimal 50 karakter
+    /* Validasi deskripsi minimal 50 karakter
     if(strlen($deskripsi) < 50) {
         $_SESSION['error_message'] = "Deskripsi minimal 50 karakter!";
         header("Location: rs_data.php");
         exit;
-    }
+    } */
     
     // Upload foto
     $foto = uploadFoto($_FILES['foto']);
@@ -111,12 +111,12 @@ elseif($mode == 'edit') {
     $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
     $foto_lama = $_POST['foto_lama'];
     
-    // Validasi deskripsi minimal 50 karakter
+    /* Validasi deskripsi minimal 50 karakter
     if(strlen($deskripsi) < 50) {
         $_SESSION['error_message'] = "Deskripsi minimal 50 karakter!";
         header("Location: rs_data.php");
         exit;
-    }
+    } */
     
     // Upload foto baru (jika ada)
     $foto = uploadFoto($_FILES['foto'], $foto_lama);

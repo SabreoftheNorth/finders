@@ -2,6 +2,30 @@
 session_start();
 require_once '../config/db_connect.php';
 
+// Handler AJAX untuk detail user
+if(isset($_GET['ajax']) && $_GET['ajax'] == 'user_detail') {
+    $id_user = mysqli_real_escape_string($conn, $_GET['id']);
+    
+    $query = mysqli_query($conn, "
+        SELECT u.*, COUNT(p.id_penjadwalan) as total_booking
+        FROM akun_user u
+        LEFT JOIN data_penjadwalan p ON u.id_user = p.id_user
+        WHERE u.id_user = '$id_user'
+        GROUP BY u.id_user
+    ");
+    
+    if($query && mysqli_num_rows($query) > 0) {
+        $data = mysqli_fetch_assoc($query);
+        $data['tanggal_daftar'] = date('d M Y', strtotime($data['tanggal_daftar']));
+        header('Content-Type: application/json');
+        echo json_encode($data);
+    } else {
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'User tidak ditemukan']);
+    }
+    exit;
+}
+
 // Cek Login Admin
 if(!isset($_SESSION['admin_id'])) {
     // Simpan URL tujuan untuk redirect setelah login
@@ -233,16 +257,16 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="flex justify-center gap-2">
-                                                <button onclick="viewUserDetail(<?= $row['id_user'] ?>)" 
-                                                        class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition"
-                                                        title="Lihat Detail">
+                                                <button onclick="openModalUserDetail(<?= $row['id_user'] ?>)"
+                                                    class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition"
+                                                    title="Lihat Detail">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </button>
-                                                <button onclick="viewUserBookings(<?= $row['id_user'] ?>)" 
-                                                        class="text-green-600 hover:text-green-800 p-2 hover:bg-green-50 rounded-lg transition"
-                                                        title="Lihat Booking">
+                                                <a href="jadwal_data.php?user=<?= $row['id_user'] ?>"
+                                                    class="text-green-600 hover:text-green-800 p-2 hover:bg-green-50 rounded-lg transition inline-block"
+                                                    title="Lihat Booking">
                                                     <i class="fa-solid fa-calendar-days"></i>
-                                                </button>
+                                                </a>
                                                 <button onclick="deleteUser(<?= $row['id_user'] ?>, '<?= htmlspecialchars($row['nama']) ?>', <?= $row['total_booking'] ?>)" 
                                                         class="text-red-600 hover:text-red-800 p-2 hover:bg-red-50 rounded-lg transition"
                                                         title="Hapus">
@@ -282,13 +306,96 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
         </div>
     </div>
 
+    <!-- Modal Detail User -->
+    <div id="modalUserDetail" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-gray-800">Detail User</h3>
+                <button onclick="closeModalUser()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modalUserContent" class="p-6">
+                <div class="flex items-center justify-center py-12">
+                    <i class="fa-solid fa-spinner fa-spin text-3xl text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-    function viewUserDetail(id) {
-        openModal('user_detail.php?id=' + id);
+    function openModalUserDetail(id) {
+        const modal = document.getElementById('modalUserDetail');
+        const content = document.getElementById('modalUserContent');
+        
+        modal.classList.remove('hidden');
+        
+        // Fetch detail user via AJAX
+        fetch(`jadwal_data.php?user=${id}`)
+            .then(response => response.text())
+            .then(html => {
+                // Parse HTML untuk mengambil data user
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Ambil data dari halaman jadwal_data.php
+                fetch('<?php echo $_SERVER['PHP_SELF']; ?>?ajax=user_detail&id=' + id)
+                    .then(response => response.json())
+                    .then(data => {
+                        content.innerHTML = `
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-xl">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                                            ${data.nama.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xl font-bold text-gray-800">${data.nama}</h4>
+                                            <p class="text-sm text-gray-500">ID: #${data.id_user}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <label class="text-gray-500 font-semibold">Email</label>
+                                            <p class="text-gray-800">${data.email}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-gray-500 font-semibold">No. Telpon</label>
+                                            <p class="text-gray-800">${data.no_telpon}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-gray-500 font-semibold">Tanggal Daftar</label>
+                                            <p class="text-gray-800">${data.tanggal_daftar}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-gray-500 font-semibold">Total Booking</label>
+                                            <p class="text-blue-600 font-bold text-lg">${data.total_booking}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex gap-3">
+                                    <button onclick="closeModalUser()" 
+                                        class="flex-1 px-6 py-2.5 border border-gray-300 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition">
+                                        Tutup
+                                    </button>
+                                    <a href="jadwal_data.php?user=${id}" 
+                                        class="flex-1 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition text-center">
+                                        Lihat Semua Booking
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    });
+            })
+            .catch(err => {
+                content.innerHTML = '<div class="text-red-500 text-center py-8">Gagal memuat data.</div>';
+            });
     }
 
-    function viewUserBookings(id) {
-        openModal('user_bookings.php?id=' + id);
+    function closeModalUser() {
+        document.getElementById('modalUserDetail').classList.add('hidden');
     }
 
     function deleteUser(id, nama, totalBooking) {
@@ -296,37 +403,10 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
             alert('Tidak dapat menghapus user "' + nama + '" karena memiliki ' + totalBooking + ' booking aktif.\n\nHapus semua booking terlebih dahulu.');
             return;
         }
-        
         if(confirm('Yakin ingin menghapus user "' + nama + '"?')) {
             window.location.href = 'users_data.php?delete=' + id;
         }
     }
-
-    function openModal(url) {
-        document.getElementById("modalOverlay").classList.remove("hidden");
-        let target = document.getElementById("modalBody");
-        target.innerHTML = '<div class="flex items-center justify-center py-12"><i class="fa-solid fa-spinner fa-spin text-3xl text-blue-600"></i></div>';
-        
-        fetch(url)
-            .then(response => response.text())
-            .then(data => {
-                target.innerHTML = data;
-            })
-            .catch(err => {
-                target.innerHTML = '<div class="text-red-500 text-center py-8">Gagal memuat data.</div>';
-            });
-    }
-
-    function closeModal() {
-        document.getElementById("modalOverlay").classList.add("hidden");
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
-        if(e.target === this) {
-            closeModal();
-        }
-    });
     </script>
 
 </body>

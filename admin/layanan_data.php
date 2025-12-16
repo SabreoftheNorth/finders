@@ -4,27 +4,78 @@ require_once '../config/db_connect.php';
 
 // Cek Login Admin
 if (!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// DELETE dengan Prepared Statement
-if (isset($_GET['delete'])) {
-    $id_layanan = $_GET['delete'];
+// ===== HANDLER TAMBAH/EDIT LAYANAN =====
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mode'])) {
+    $mode = $_POST['mode'];
+    $id_rs = mysqli_real_escape_string($conn, $_POST['id_rs']);
+    $nama_layanan = mysqli_real_escape_string($conn, $_POST['nama_layanan']);
+    $kategori = mysqli_real_escape_string($conn, $_POST['kategori']);
+    $ketersediaan = mysqli_real_escape_string($conn, $_POST['ketersediaan_layanan']);
+    $id_admin = $_SESSION['admin_id'];
+    
+    if($mode === 'tambah') {
+        $query = "INSERT INTO data_layanan_rs (id_rs, nama_layanan, kategori, ketersediaan_layanan, id_admin) 
+                  VALUES ('$id_rs', '$nama_layanan', '$kategori', '$ketersediaan', '$id_admin')";
+        
+        if(mysqli_query($conn, $query)) {
+            $_SESSION['success_message'] = "Layanan berhasil ditambahkan";
+        } else {
+            $_SESSION['error_message'] = "Gagal menambahkan layanan: " . mysqli_error($conn);
+        }
+    } 
+    elseif($mode === 'edit') {
+        $id_layanan = mysqli_real_escape_string($conn, $_POST['id_layanan']);
+        $query = "UPDATE data_layanan_rs SET 
+                  id_rs = '$id_rs',
+                  nama_layanan = '$nama_layanan',
+                  kategori = '$kategori',
+                  ketersediaan_layanan = '$ketersediaan'
+                  WHERE id_layanan = '$id_layanan'";
+        
+        if(mysqli_query($conn, $query)) {
+            $_SESSION['success_message'] = "Layanan berhasil diupdate";
+        } else {
+            $_SESSION['error_message'] = "Gagal update layanan: " . mysqli_error($conn);
+        }
+    }
+    
+    header("Location: layanan_data.php");
+    exit;
+}
 
+// ===== HANDLER DELETE =====
+if (isset($_GET['delete'])) {
+    $id_layanan = mysqli_real_escape_string($conn, $_GET['delete']);
     $stmt = mysqli_prepare($conn, "DELETE FROM data_layanan_rs WHERE id_layanan = ?");
     mysqli_stmt_bind_param($stmt, "i", $id_layanan);
-
+    
     if (mysqli_stmt_execute($stmt)) {
         $_SESSION['success_message'] = "Data layanan berhasil dihapus";
     } else {
         $_SESSION['error_message'] = "Gagal menghapus data";
     }
-
     mysqli_stmt_close($stmt);
     header("Location: layanan_data.php");
+    exit;
+}
+
+// ===== AJAX GET DATA UNTUK EDIT =====
+if (isset($_GET['ajax']) && $_GET['ajax'] === 'get' && isset($_GET['id'])) {
+    header('Content-Type: application/json');
+    $id_layanan = mysqli_real_escape_string($conn, $_GET['id']);
+    $query = mysqli_query($conn, "SELECT * FROM data_layanan_rs WHERE id_layanan = '$id_layanan'");
+    
+    if($query && mysqli_num_rows($query) > 0) {
+        $data = mysqli_fetch_assoc($query);
+        echo json_encode(['success' => true, 'data' => $data]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Data tidak ditemukan']);
+    }
     exit;
 }
 
@@ -35,10 +86,10 @@ $filter_kategori = $_GET['kategori'] ?? '';
 
 // Base Query
 $query_sql = "
-    SELECT l.*, rs.nama_rs, rs.wilayah
-    FROM data_layanan_rs l
-    JOIN data_rumah_sakit rs ON l.id_rs = rs.id_rs
-    WHERE 1=1
+SELECT l.*, rs.nama_rs, rs.wilayah
+FROM data_layanan_rs l
+JOIN data_rumah_sakit rs ON l.id_rs = rs.id_rs
+WHERE 1=1
 ";
 
 // Search
@@ -74,19 +125,17 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Layanan - Admin FindeRS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Layanan - Admin FindeRS</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
-    
 <?php include 'includes/sidebar_admin.php'; ?>
 
 <main class="flex-1 overflow-y-auto flex flex-col">
 <div class="p-6 flex-1">
-
 <?php include 'includes/header_admin.php'; ?>
 
 <!-- Alerts -->
@@ -108,48 +157,42 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 </div>
 <?php unset($_SESSION['error_message']); endif; ?>
 
-
 <!-- Filter & Search -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
     <div class="flex flex-wrap gap-3 items-center justify-between">
         <form method="GET" class="flex flex-wrap gap-3 flex-1">
-
-            <input type="text" name="search" 
-                   value="<?= htmlspecialchars($search) ?>" 
-                   placeholder="Cari nama layanan atau RS..." 
-                   class="flex-1 min-w-[200px] px-4 py-2 border rounded-lg">
-
+            <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Cari nama layanan atau RS..." class="flex-1 min-w-[200px] px-4 py-2 border rounded-lg">
+            
             <select name="rs" class="px-4 py-2 border rounded-lg">
                 <option value="">Semua RS</option>
-                <?php while($rs = mysqli_fetch_assoc($query_rs_list)): ?>
-                <option value="<?= $rs['id_rs'] ?>" <?= $filter_rs == $rs['id_rs'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($rs['nama_rs']) ?>
-                </option>
+                <?php 
+                mysqli_data_seek($query_rs_list, 0);
+                while($rs = mysqli_fetch_assoc($query_rs_list)): 
+                ?>
+                    <option value="<?= $rs['id_rs'] ?>" <?= $filter_rs == $rs['id_rs'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($rs['nama_rs']) ?>
+                    </option>
                 <?php endwhile; ?>
             </select>
-
+            
             <select name="kategori" class="px-4 py-2 border rounded-lg">
                 <option value="">Semua Kategori</option>
-                <?php while($kat = mysqli_fetch_assoc($query_kategori_list)): ?>
-                <option value="<?= htmlspecialchars($kat['kategori']) ?>" 
-                        <?= $filter_kategori == $kat['kategori'] ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($kat['kategori']) ?>
-                </option>
+                <?php 
+                mysqli_data_seek($query_kategori_list, 0);
+                while($kat = mysqli_fetch_assoc($query_kategori_list)): 
+                ?>
+                    <option value="<?= htmlspecialchars($kat['kategori']) ?>" <?= $filter_kategori == $kat['kategori'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($kat['kategori']) ?>
+                    </option>
                 <?php endwhile; ?>
             </select>
-
+            
             <button class="px-6 py-2 bg-blue-600 text-white rounded-lg">
                 <i class="fa-solid fa-search mr-2"></i>Cari
             </button>
-
-            <a href="layanan_data.php" 
-               class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">
-                Reset
-            </a>
+            <a href="layanan_data.php" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg">Reset</a>
         </form>
-
-        <button onclick="openModal('layanan_form.php')" 
-                class="px-6 py-2 bg-green-600 text-white rounded-lg flex items-center gap-2">
+        <button onclick="openFormModal('tambah')" class="px-6 py-2 bg-green-600 text-white rounded-lg flex items-center gap-2">
             <i class="fa-solid fa-plus"></i> Tambah Layanan
         </button>
     </div>
@@ -157,12 +200,10 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 
 <!-- Statistics -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-
     <div class="bg-white p-5 rounded-xl shadow-sm border">
         <p class="text-sm text-gray-500">Total Layanan</p>
         <p class="text-2xl font-bold"><?= mysqli_num_rows($result) ?></p>
     </div>
-
     <?php
     mysqli_data_seek($result, 0);
     $tersedia = 0;
@@ -171,17 +212,14 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
     }
     mysqli_data_seek($result, 0);
     ?>
-
     <div class="bg-white p-5 rounded-xl shadow-sm border">
         <p class="text-sm text-gray-500">Layanan Tersedia</p>
         <p class="text-2xl font-bold text-green-600"><?= $tersedia ?></p>
     </div>
-
     <div class="bg-white p-5 rounded-xl shadow-sm border">
         <p class="text-sm text-gray-500">Tidak Tersedia</p>
         <p class="text-2xl font-bold text-red-600"><?= mysqli_num_rows($result) - $tersedia ?></p>
     </div>
-
     <div class="bg-white p-5 rounded-xl shadow-sm border">
         <p class="text-sm text-gray-500">Kategori</p>
         <p class="text-2xl font-bold text-purple-600">
@@ -207,90 +245,201 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                     <th class="px-6 py-4 text-center text-xs font-semibold">Aksi</th>
                 </tr>
             </thead>
-
             <tbody class="divide-y">
-            <?php if(mysqli_num_rows($result) > 0): ?>
-                <?php while($row = mysqli_fetch_assoc($result)): ?>
-                <tr class="hover:bg-gray-50">
-                    <td class="px-6 py-4 text-sm font-medium">#<?= $row['id_layanan'] ?></td>
-
-                    <td class="px-6 py-4">
-                        <div class="text-sm font-semibold">
-                            <?= htmlspecialchars($row['nama_layanan']) ?>
-                        </div>
-                    </td>
-
-                    <td class="px-6 py-4">
-                        <div class="text-sm"><?= htmlspecialchars($row['nama_rs']) ?></div>
-                        <div class="text-xs text-gray-500"><?= htmlspecialchars($row['wilayah']) ?></div>
-                    </td>
-
-                    <td class="px-6 py-4">
-                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
-                            <?= htmlspecialchars($row['kategori']) ?>
-                        </span>
-                    </td>
-
-                    <td class="px-6 py-4">
-                        <?php if ($row['ketersediaan_layanan'] === 'Tersedia'): ?>
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-1 w-fit">
-                            <i class="fa-solid fa-check-circle"></i> Tersedia
-                        </span>
-                        <?php else: ?>
-                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1 w-fit">
-                            <i class="fa-solid fa-times-circle"></i> Tidak Tersedia
-                        </span>
-                        <?php endif; ?>
-                    </td>
-
-                    <td class="px-6 py-4">
-                        <div class="flex justify-center gap-2">
-                            <button onclick="editLayanan(<?= $row['id_layanan'] ?>)"
-                                class="text-yellow-600 p-2 hover:bg-yellow-50 rounded-lg">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-
-                            <button onclick="deleteLayanan(<?= $row['id_layanan'] ?>, '<?= htmlspecialchars($row['nama_layanan']) ?>')"
-                                class="text-red-600 p-2 hover:bg-red-50 rounded-lg">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <?php endwhile; ?>
-
-            <?php else: ?>
+                <?php if(mysqli_num_rows($result) > 0): ?>
+                    <?php while($row = mysqli_fetch_assoc($result)): ?>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium">#<?= $row['id_layanan'] ?></td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-semibold"><?= htmlspecialchars($row['nama_layanan']) ?></div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm"><?= htmlspecialchars($row['nama_rs']) ?></div>
+                            <div class="text-xs text-gray-500"><?= htmlspecialchars($row['wilayah']) ?></div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs"><?= htmlspecialchars($row['kategori']) ?></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <?php if ($row['ketersediaan_layanan'] === 'Tersedia'): ?>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs flex items-center gap-1 w-fit">
+                                    <i class="fa-solid fa-check-circle"></i> Tersedia
+                                </span>
+                            <?php else: ?>
+                                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1 w-fit">
+                                    <i class="fa-solid fa-times-circle"></i> Tidak Tersedia
+                                </span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="editLayanan(<?= $row['id_layanan'] ?>)" class="text-yellow-600 p-2 hover:bg-yellow-50 rounded-lg">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button onclick="deleteLayanan(<?= $row['id_layanan'] ?>, '<?= htmlspecialchars($row['nama_layanan']) ?>')" class="text-red-600 p-2 hover:bg-red-50 rounded-lg">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
                 <tr>
                     <td colspan="6" class="px-6 py-12 text-center">
                         <i class="fa-solid fa-stethoscope text-4xl text-gray-300 mb-3"></i>
                         <p class="text-gray-500">Tidak ada data layanan ditemukan</p>
-                        <button onclick="openModal('layanan_form.php')" 
-                            class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg">
+                        <button onclick="openFormModal('tambah')" class="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg">
                             Tambah Layanan Pertama
                         </button>
                     </td>
                 </tr>
-            <?php endif; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
 
 </div>
-
 <?php include 'includes/footer_admin.php'; ?>
 </main>
 
+<!-- Modal Form Layanan -->
+<div id="modalFormLayanan" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
+    <div class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative">
+        <button onclick="closeFormModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+        
+        <div class="p-6">
+            <h2 id="formTitle" class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-stethoscope text-blue-600"></i>
+                </div>
+                Tambah Layanan Baru
+            </h2>
+
+            <form id="formLayanan" method="POST" action="layanan_data.php" class="space-y-6">
+                <input type="hidden" name="mode" id="mode" value="tambah">
+                <input type="hidden" name="id_layanan" id="id_layanan" value="">
+
+                <!-- Pilih Rumah Sakit -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Rumah Sakit <span class="text-red-500">*</span>
+                    </label>
+                    <select name="id_rs" id="form_id_rs" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">-- Pilih Rumah Sakit --</option>
+                        <?php
+                        mysqli_data_seek($query_rs_list, 0);
+                        while($rs_opt = mysqli_fetch_assoc($query_rs_list)):
+                        ?>
+                            <option value="<?= $rs_opt['id_rs'] ?>"><?= htmlspecialchars($rs_opt['nama_rs']) ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+
+                <!-- Nama Layanan -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Nama Layanan <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="nama_layanan" id="form_nama_layanan" required placeholder="Contoh: Poliklinik Umum, Bedah Jantung" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+                <!-- Kategori -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Kategori <span class="text-red-500">*</span>
+                    </label>
+                    <select name="kategori" id="form_kategori" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="Poliklinik">Poliklinik</option>
+                        <option value="Spesialis">Spesialis</option>
+                        <option value="Bedah">Bedah</option>
+                        <option value="Gawat Darurat">Gawat Darurat</option>
+                        <option value="Penunjang">Penunjang</option>
+                        <option value="Rawat Inap">Rawat Inap</option>
+                    </select>
+                </div>
+
+                <!-- Ketersediaan -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Ketersediaan Layanan
+                    </label>
+                    <select name="ketersediaan_layanan" id="form_ketersediaan" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <option value="Tersedia">Tersedia</option>
+                        <option value="Tidak Tersedia">Tidak Tersedia</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeFormModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition">
+                        <i class="fa-solid fa-times mr-2"></i> Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg">
+                        <i class="fa-solid fa-save mr-2"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+function openFormModal(mode = 'tambah', data = null) {
+    const modal = document.getElementById('modalFormLayanan');
+    const form = document.getElementById('formLayanan');
+    const title = document.getElementById('formTitle');
+    
+    modal.classList.remove('hidden');
+    
+    if(mode === 'edit' && data) {
+        title.innerHTML = '<div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center"><i class="fa-solid fa-pen-to-square text-yellow-600"></i></div> Edit Layanan';
+        document.getElementById('mode').value = 'edit';
+        document.getElementById('id_layanan').value = data.id_layanan;
+        document.getElementById('form_id_rs').value = data.id_rs;
+        document.getElementById('form_nama_layanan').value = data.nama_layanan;
+        document.getElementById('form_kategori').value = data.kategori;
+        document.getElementById('form_ketersediaan').value = data.ketersediaan_layanan;
+    } else {
+        title.innerHTML = '<div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center"><i class="fa-solid fa-stethoscope text-blue-600"></i></div> Tambah Layanan Baru';
+        document.getElementById('mode').value = 'tambah';
+        form.reset();
+    }
+}
+
+function closeFormModal() {
+    document.getElementById('modalFormLayanan').classList.add('hidden');
+}
+
 function editLayanan(id) {
-    openModal('layanan_form.php?id=' + id);
+    fetch('layanan_data.php?ajax=get&id=' + id)
+        .then(res => res.json())
+        .then(data => {
+            if(data.success) {
+                openFormModal('edit', data.data);
+            } else {
+                alert('Gagal memuat data: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert('Terjadi kesalahan saat memuat data');
+        });
 }
 
 function deleteLayanan(id, name) {
-    if (confirm("Hapus layanan: " + name + " ?")) {
+    if (confirm("Hapus layanan: " + name + " ?\n\nData tidak dapat dikembalikan!")) {
         window.location.href = "layanan_data.php?delete=" + id;
     }
 }
+
+// Close modal on outside click
+document.getElementById('modalFormLayanan')?.addEventListener('click', function(e) {
+    if(e.target === this) closeFormModal();
+});
 </script>
 
 </body>

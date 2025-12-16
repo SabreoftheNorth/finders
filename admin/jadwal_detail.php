@@ -152,13 +152,13 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                 </div>
                                 <div>
                                     <label class="text-xs font-semibold text-gray-500 uppercase">NIK</label>
-                                    <p class="text-base font-medium text-gray-800 mt-1"><?= $data['no_nik'] ?: '-' ?></p>
+                                    <p class="text-base font-medium text-gray-800 mt-1"><?= $data['no_nik'] ?? '-' ?></p>
                                 </div>
                                 <div>
                                     <label class="text-xs font-semibold text-gray-500 uppercase">No. Telepon</label>
                                     <p class="text-base font-medium text-gray-800 mt-1 flex items-center gap-2">
                                         <i class="fa-solid fa-phone text-green-600 text-sm"></i>
-                                        <?= htmlspecialchars($data['no_telpon']) ?>
+                                        <?= htmlspecialchars($user['no_telp'] ?? '-') ?>
                                     </p>
                                 </div>
                                 <div>

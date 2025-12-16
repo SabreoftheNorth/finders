@@ -10,9 +10,26 @@ if(!isset($_SESSION['admin_id'])) {
     exit;
 }
 
+// Handler DELETE
+if(isset($_POST['delete_id'])) {
+    $id_penjadwalan = mysqli_real_escape_string($conn, $_POST['delete_id']);
+    
+    $query_delete = mysqli_query($conn, "DELETE FROM data_penjadwalan WHERE id_penjadwalan = '$id_penjadwalan'");
+    
+    if($query_delete) {
+        $_SESSION['success_message'] = "Data penjadwalan berhasil dihapus";
+    } else {
+        $_SESSION['error_message'] = "Gagal menghapus data: " . mysqli_error($conn);
+    }
+    
+    header("Location: jadwal_data.php");
+    exit;
+}
+
 // Filter
 $filter_status = isset($_GET['status']) ? $_GET['status'] : '';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
+$filter_user = isset($_GET['user']) ? mysqli_real_escape_string($conn, $_GET['user']) : '';
 
 // Query dengan filter
 $query_sql = "
@@ -30,6 +47,10 @@ if($filter_status) {
 
 if($search) {
     $query_sql .= " AND (p.nama_pasien LIKE '%$search%' OR rs.nama_rs LIKE '%$search%' OR p.no_nik LIKE '%$search%')";
+}
+
+if($filter_user) {
+    $query_sql .= " AND p.id_user = '$filter_user'";
 }
 
 $query_sql .= " ORDER BY p.dibuat_pada DESC";
@@ -110,7 +131,9 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
                                         <td class="px-6 py-4 text-sm font-medium text-gray-800">#<?= $row['id_penjadwalan'] ?></td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-medium text-gray-800"><?= htmlspecialchars($row['nama_pasien']) ?></div>
-                                            <div class="text-xs text-gray-500">NIK: <?= $row['no_nik'] ?: '-' ?></div>
+                                            <div class="text-xs text-gray-500">
+                                                NIK: <?= $row['no_nik'] ?? '-' ?>
+                                            </div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_rs']) ?></td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_layanan']) ?></td>
@@ -151,17 +174,101 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
+    <!-- Modal Overlay untuk Update Status -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[999] flex items-center justify-center p-4">
+        <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative">
+            <button onclick="closeModal()" 
+                class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="p-6">
+                Memuat...
+            </div>
+        </div>
+    </div>
+
     <script>
+    // ===== FUNGSI UPDATE STATUS =====
     function updateStatus(id) {
-        // Implementasi update status via modal
-        alert('Fitur update status untuk ID: ' + id);
+        openModal('jadwal_form.php?id=' + id);
     }
 
+    // ===== FUNGSI DELETE JADWAL =====
     function deleteJadwal(id) {
-        if(confirm('Yakin ingin menghapus data penjadwalan ini?')) {
-            window.location.href = 'jadwal_delete.php?id=' + id;
+        if(confirm('Yakin ingin menghapus data penjadwalan ini?\n\nData tidak dapat dikembalikan!')) {
+            // Create form untuk POST request
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'jadwal_data.php';
+            
+            const inputId = document.createElement('input');
+            inputId.type = 'hidden';
+            inputId.name = 'delete_id';
+            inputId.value = id;
+            
+            form.appendChild(inputId);
+            document.body.appendChild(form);
+            form.submit();
         }
     }
+
+    // ===== FUNGSI BUKA MODAL =====
+    function openModal(url) {
+        const overlay = document.getElementById('modalOverlay');
+        const content = document.getElementById('modalContent');
+        
+        if(overlay && content) {
+            overlay.classList.remove('hidden');
+            
+            // Loading state
+            content.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3 animate-pulse">
+                    <div class="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span class="font-medium text-gray-600">Memuat data...</span>
+                </div>
+            `;
+            
+            // Fetch data
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.text();
+                })
+                .then(html => {
+                    content.innerHTML = html;
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    content.innerHTML = `
+                        <div class="bg-white p-6 rounded-xl text-red-500 text-center">
+                            <i class="fa-solid fa-exclamation-triangle text-4xl mb-3"></i>
+                            <p class="font-semibold">Gagal memuat data</p>
+                            <p class="text-sm mt-2">${err.message}</p>
+                        </div>
+                    `;
+                });
+        }
+    }
+
+    // ===== FUNGSI TUTUP MODAL =====
+    function closeModal() {
+        const overlay = document.getElementById('modalOverlay');
+        if(overlay) {
+            overlay.classList.add('hidden');
+        }
+    }
+
+    // Close modal saat klik di luar
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.getElementById('modalOverlay');
+        if(overlay) {
+            overlay.addEventListener('click', function(e) {
+                if(e.target === this) {
+                    closeModal();
+                }
+            });
+        }
+    });
     </script>
 
 </body>
