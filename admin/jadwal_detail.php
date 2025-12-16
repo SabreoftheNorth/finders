@@ -246,7 +246,15 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                             </div>
                             <div class="bg-white rounded-xl p-4 border border-blue-200">
                                 <label class="text-xs font-semibold text-gray-500 uppercase">Estimasi Waktu</label>
-                                <p class="text-xl font-bold text-gray-800 mt-2"><?= $data['estimasi_jam'] ?: '-' ?></p>
+                                <?php 
+                                    $jam_text = '';
+                                    if (!empty($data['jam_mulai']) && !empty($data['jam_selesai'])) {
+                                        $jam_text = date('H:i', strtotime($data['jam_mulai'])) . ' - ' . date('H:i', strtotime($data['jam_selesai']));
+                                    } elseif (!empty($data['jam_mulai'])) {
+                                        $jam_text = date('H:i', strtotime($data['jam_mulai']));
+                                    }
+                                ?>
+                                <p class="text-3xl font-bold text-gray-800"><?= $jam_text ?: '-' ?></p>
                             </div>
                         </div>
                     </div>
@@ -358,7 +366,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                 <div class="flex-1 pb-4">
                                     <p class="font-semibold text-gray-800"><?= $status_style['label'] ?></p>
                                     <p class="text-xs text-gray-500">
-                                        <?= $data['diperbarui_pada'] ? date('d M Y, H:i', strtotime($data['diperbarui_pada'])) : 'Belum diupdate' ?>
+                                        <p class="text-xs text-gray-500 mt-1">Data dibuat: <?= date('d M Y, H:i', strtotime($data['dibuat_pada'])) ?></p>
                                     </p>
                                 </div>
                             </div>
