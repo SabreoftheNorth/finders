@@ -32,8 +32,9 @@ $user = mysqli_fetch_array($query);
 
 // Skenario 1: User mengisi Password Lama (Saat Edit Email / Telepon / Password)
 if(!empty($password_lama)) {
-    // Verifikasi password dengan bcrypt
-    if (!password_verify($password_lama, $user['password'])) {
+    // Verifikasi password dengan SHA256 (sesuai dengan sistem login)
+    $password_lama_hash = hash('sha256', $password_lama);
+    if ($password_lama_hash != $user['password']) {
         $_SESSION['msg_type'] = 'error';
         $_SESSION['msg_content'] = 'Password lama yang Anda masukkan salah!';
         header("Location: ../profile.php");
@@ -84,8 +85,8 @@ if(!empty($password_baru)) {
         }
     }
     
-    // Hash password baru dengan bcrypt
-    $password_hash = password_hash($password_baru, PASSWORD_DEFAULT);
+    // Hash password baru dengan SHA256 (sesuai dengan sistem login)
+    $password_hash = hash('sha256', $password_baru);
     $update_query .= ", password = '$password_hash'";
 }
 

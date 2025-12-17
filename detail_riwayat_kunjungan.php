@@ -130,11 +130,11 @@
 
             <!-- Modal Footer -->
             <div class="bg-gray-50/50 p-4 rounded-b-3xl border-t border-gray-200 flex gap-3">
-                <button onclick="shareTicket()" class="flex-1 px-6 py-3 bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-all">
-                    Share
+                <button onclick="closeDetailModal()" class="flex-1 px-6 py-3 bg-white border-2 border-gray-300 hover:border-blue-400 hover:bg-gray-50 text-gray-700 font-bold rounded-xl transition-all">
+                    Keluar
                 </button>
-                <button onclick="saveTicket()" class="flex-1 px-6 py-3 bg-finders-green hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30">
-                    Simpan Tiket
+                <button onclick="shareTicket()" class="flex-1 px-6 py-3 bg-finders-blue hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/30">
+                    Share
                 </button>
             </div>
         </div>

@@ -127,8 +127,8 @@ include 'config/db_connect.php';
                                     'border' => 'border-green-400/50'
                                 ];
                             }
-                            elseif (strpos($kategori, 'darurat') !== false || strpos($kategori, 'ugd') !== false) {
-                                $style['image'] = 'layanan_igd.jpg';
+                            elseif (strpos($kategori, 'umum') !== false || strpos($kategori, 'umum') !== false) {
+                                $style['image'] = 'layanan_umum.jpg';
                             }
                             elseif (strpos($kategori, 'penunjang') !== false || strpos($kategori, 'radiologi') !== false) {
                                 $style['image'] = 'layanan_penunjang.png';

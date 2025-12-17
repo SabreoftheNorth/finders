@@ -106,7 +106,7 @@ unset($_SESSION['msg_content']);
                                 <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Email</label>
                                 <div class="flex items-center gap-4">
                                     <p class="text-gray-900 font-semibold text-lg">
-                                        <span id="emailHidden">************@example.com</span>
+                                        <span id="emailHidden">************<?= substr($user['email'], -10) ?></span>
                                         <span id="emailRevealed" style="display: none;"><?= htmlspecialchars($user['email']) ?></span>
                                     </p>
                                     <button type="button" onclick="toggleReveal('email')" 
