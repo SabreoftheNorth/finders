@@ -1,66 +1,46 @@
 <?php
-// api/auth/register.php
 session_start();
-require_once '../../config/db_connect.php';
+require_once '../../config/db_connect.php'; // Panggil file koneksi
 
-header('Content-Type: application/json');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Ambil data dari form & amankan input (mencegah SQL Injection)
+    $nama = mysqli_real_escape_string($conn, $_POST['nama']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $no_telpon = mysqli_real_escape_string($conn, $_POST['no_telpon']);
+    
+    $password = $_POST['password'];
+    $konfirmasi = $_POST['konfirmasi_password'];
 
-// Validasi method request
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
-    exit;
-}
+    // 1. Validasi Password Match
+    if ($password !== $konfirmasi) {
+        echo "<script>alert('Konfirmasi password tidak cocok!'); window.history.back();</script>";
+        exit;
+    }
 
-// Ambil input dengan aman
-$nama    = trim($_POST['nama'] ?? '');
-$email   = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
-$no_telpon = trim($_POST['no_telp'] ?? ''); // Sesuaikan name di form HTML (no_telp)
+    // 2. Cek apakah email sudah terdaftar
+    $cek_email = mysqli_query($conn, "SELECT email FROM akun_user WHERE email = '$email'");
+    if (mysqli_num_rows($cek_email) > 0) {
+        echo "<script>alert('Email sudah terdaftar! Gunakan email lain.'); window.history.back();</script>";
+        exit;
+    }
 
-// Validasi input kosong
-if (empty($nama) || empty($email) || empty($password)) {
-    echo json_encode(['status' => 'error', 'message' => 'Nama, Email, dan Password wajib diisi']);
-    exit;
-}
+    // 3. Enkripsi Password (SHA256 sesuai database kamu)
+    $password_hash = hash('sha256', $password);
 
-// 1. Cek apakah email sudah ada di tabel 'akun_user'
-$checkQuery = "SELECT id_user FROM akun_user WHERE email = ?";
-$stmt = $conn->prepare($checkQuery);
-if (!$stmt) {
-    echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $conn->error]);
-    exit;
-}
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
+    // 4. Masukkan ke Database
+    $query = "INSERT INTO akun_user (nama, email, password, no_telpon) 
+              VALUES ('$nama', '$email', '$password_hash', '$no_telpon')";
 
-if ($stmt->num_rows > 0) {
-    echo json_encode(['status' => 'error', 'message' => 'Email sudah terdaftar, silakan gunakan email lain.']);
-    $stmt->close();
-    exit;
-}
-$stmt->close();
-
-// 2. Hash Password (Keamanan)
-$passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-// 3. Insert ke tabel 'akun_user' (Kolom: nama, email, password, no_telpon)
-$insertQuery = "INSERT INTO akun_user (nama, email, password, no_telpon) VALUES (?, ?, ?, ?)";
-$stmt = $conn->prepare($insertQuery);
-if (!$stmt) {
-    echo json_encode(['status' => 'error', 'message' => 'Prepare statement failed: ' . $conn->error]);
-    exit;
-}
-
-$stmt->bind_param("ssss", $nama, $email, $passwordHash, $no_telpon);
-
-if ($stmt->execute()) {
-    echo json_encode(['status' => 'success', 'message' => 'Registrasi berhasil! Silakan login.']);
+    if (mysqli_query($conn, $query)) {
+        echo "<script>
+            alert('Pendaftaran Berhasil! Silakan Login.');
+            window.location.href = '../../login.php';
+        </script>";
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 } else {
-    echo json_encode(['status' => 'error', 'message' => 'Gagal mendaftar: ' . $stmt->error]);
+    // Jika file diakses langsung tanpa submit form
+    header("Location: ../../register.php");
 }
-
-$stmt->close();
-$conn->close();
 ?>

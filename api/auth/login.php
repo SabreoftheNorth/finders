@@ -1,83 +1,75 @@
 <?php
-
 session_start();
 require_once '../../config/db_connect.php';
 
-header('Content-Type: application/json');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $identifier = mysqli_real_escape_string($conn, $_POST['identifier']); // Email
+    $password = $_POST['password'];
+    
+    // Hash password input user untuk dicocokkan dengan database
+    $password_hash = hash('sha256', $password);
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['status' => 'error', 'message' => 'Method not allowed']);
-    exit;
-}
+    // 1. Cek di tabel USER (Pasien/Umum)
+    $query_user = "SELECT * FROM akun_user WHERE email = '$identifier' AND password = '$password_hash'";
+    $result_user = mysqli_query($conn, $query_user);
 
-$email    = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
-
-if (empty($email) || empty($password)) {
-    echo json_encode(['status' => 'error', 'message' => 'Email dan Password wajib diisi']);
-    exit;
-}
-
-// --- LOGIKA LOGIN BERTINGKAT (Sesuai Database Baru) ---
-
-// 1. Cek User Biasa (akun_user)
-$stmt = $conn->prepare("SELECT id_user, nama, password FROM akun_user WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$res = $stmt->get_result();
-
-if ($row = $res->fetch_assoc()) {
-    if (password_verify($password, $row['password'])) {
-        // Set Session User
-        $_SESSION['user_id'] = $row['id_user'];
-        $_SESSION['nama']    = $row['nama'];
-        $_SESSION['role']    = 'user';
+    if (mysqli_num_rows($result_user) > 0) {
+        // Login Berhasil sebagai User
+        $data = mysqli_fetch_assoc($result_user);
         
-        echo json_encode(['status' => 'success', 'message' => 'Login Berhasil', 'redirect' => 'index.php']);
+        // Set Session
+        $_SESSION['user_id'] = $data['id_user'];
+        $_SESSION['user_name'] = $data['nama'];
+        $_SESSION['role'] = 'pasien';
+        
+        // Redirect ke Halaman Utama
+        header("Location: ../../index.php");
         exit;
     }
-}
-$stmt->close();
 
-// 2. Cek Admin (akun_admin)
-$stmt = $conn->prepare("SELECT id_admin, username, password, role FROM akun_admin WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$res = $stmt->get_result();
+    // 2. Cek di tabel ADMIN (Opsional, jika login admin lewat pintu yang sama)
+    $query_admin = "SELECT * FROM akun_admin WHERE (email = '$identifier' OR username = '$identifier') AND password = '$password_hash'";
+    $result_admin = mysqli_query($conn, $query_admin);
 
-if ($row = $res->fetch_assoc()) {
-    if (password_verify($password, $row['password'])) {
-        $_SESSION['user_id'] = $row['id_admin'];
-        $_SESSION['nama']    = $row['username'];
-        $_SESSION['role']    = $row['role']; // 'admin' atau 'super'
+    if (mysqli_num_rows($result_admin) > 0) {
+        $data = mysqli_fetch_assoc($result_admin);
         
-        echo json_encode(['status' => 'success', 'message' => 'Login Admin Berhasil', 'redirect' => 'admin/index.php']);
+        $_SESSION['admin_id'] = $data['id_admin'];
+        $_SESSION['admin_name'] = $data['username'];
+        $_SESSION['role'] = $data['role'];
+
+        header("Location: ../../admin/index.php");
         exit;
     }
-}
-$stmt->close();
 
-// 3. Cek Mitra Rumah Sakit (akun_rumah_sakit)
-$stmt = $conn->prepare("SELECT id_rs_akun, id_rs, username, password FROM akun_rumah_sakit WHERE email = ? AND status_akun = 'aktif'");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$res = $stmt->get_result();
+    // 3. Cek di tabel AKUN_RUMAH_SAKIT (Mitra RS)
+    $query_mitra = "SELECT ars.*, rs.nama_rs 
+                    FROM akun_rumah_sakit ars 
+                    JOIN data_rumah_sakit rs ON ars.id_rs = rs.id_rs 
+                    WHERE (ars.email = '$identifier' OR ars.username = '$identifier') 
+                    AND ars.password = '$password_hash' 
+                    AND ars.status_akun = 'aktif'";
+    $result_mitra = mysqli_query($conn, $query_mitra);
 
-if ($row = $res->fetch_assoc()) {
-    if (password_verify($password, $row['password'])) {
-        $_SESSION['user_id'] = $row['id_rs_akun'];
-        $_SESSION['id_rs']   = $row['id_rs']; // Simpan ID RS untuk akses data RS
-        $_SESSION['nama']    = $row['username'];
-        $_SESSION['role']    = 'rs';
+    if (mysqli_num_rows($result_mitra) > 0) {
+        $data = mysqli_fetch_assoc($result_mitra);
         
-        echo json_encode(['status' => 'success', 'message' => 'Login Mitra RS Berhasil', 'redirect' => 'mitra_rs/index.php']);
+        $_SESSION['mitra_id'] = $data['id_rs_akun'];
+        $_SESSION['id_rs'] = $data['id_rs'];
+        $_SESSION['mitra_name'] = $data['nama_rs'];
+        $_SESSION['role'] = 'mitra';
+
+        header("Location: ../../mitra_rs/index.php");
         exit;
     }
-}
-$stmt->close();
 
-// Jika tidak ditemukan di semua tabel
-echo json_encode(['status' => 'error', 'message' => 'Email atau Password salah']);
-$conn->close();
+    // Jika Gagal Login
+    echo "<script>
+        alert('Email atau Password salah!'); 
+        window.location.href='../../login.php';
+    </script>";
+
+} else {
+    header("Location: ../../login.php");
+}
 ?>
