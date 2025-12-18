@@ -72,7 +72,7 @@ if(!isset($_SESSION['redirect_after_login']) && isset($_GET['redirect'])) {
                         </label>
                     </div>
                     <div class="text-xs">
-                        <a href="#" class="font-medium text-finders-blue hover:text-green-500 transition">Lupa password?</a>
+                        <a href="forgot-password.php" class="font-medium text-finders-blue hover:text-green-500 transition">Lupa password?</a>
                     </div>
                 </div>
 
