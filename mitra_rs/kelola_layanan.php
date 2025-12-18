@@ -370,7 +370,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             btnSimpan.disabled = true;
             btnBatal.disabled = true;
 
-            fetch('../api/mitra/tambah_layanan.php', { 
+            fetch('/finders/api/mitra/tambah_layanan.php', { 
                 method: 'POST',
                 body: formData
             })
@@ -423,7 +423,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             formData.append('id_layanan', id);
             formData.append('status_baru', status);
 
-            fetch('../api/mitra/update_status_layanan.php', { method: 'POST', body: formData })
+            fetch('/finders/api/mitra/update_status_layanan.php', { method: 'POST', body: formData })
                 .then(response => {
                     if (!response.ok) throw new Error('Network error');
                     return response.json();
@@ -486,7 +486,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             formContent.appendChild(loadingOverlay);
 
             // Fetch Data Jadwal dari API baru
-            fetch('../api/mitra/get_jadwal_layanan.php?id_layanan=' + id)
+            fetch('/finders/api/mitra/get_jadwal_layanan.php?id_layanan=' + id)
                 .then(res => {
                     if (!res.ok) throw new Error('Network error');
                     return res.json();
@@ -564,7 +564,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
                 return;
             }
             
-            console.log('Sending POST request to ../api/mitra/save_jadwal.php');
+            console.log('Sending POST request to /finders/api/mitra/save_jadwal.php');
             
             // Tampilkan loading state
             const modal = document.getElementById('modalJadwal');
@@ -576,7 +576,7 @@ $page_subtitle = "Atur ketersediaan dan jam operasional layanan medis.";
             btnSimpan.disabled = true;
             btnBatal.disabled = true;
 
-            fetch('../api/mitra/save_jadwal.php', { 
+            fetch('/finders/api/mitra/save_jadwal.php', { 
                 method: 'POST',
                 body: formData
             })

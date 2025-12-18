@@ -275,7 +275,7 @@ function openJadwal(id) {
                 content.innerHTML = html;
                 
                 // Now fetch and populate jadwal data
-                const apiUrl = 'api/booking/get_jadwal_rs.php?id_rs=' + id;
+                const apiUrl = '/finders/api/booking/get_jadwal_rs.php?id_rs=' + id;
                 console.log('Fetching jadwal data from:', apiUrl);
                 
                 return fetch(apiUrl);
