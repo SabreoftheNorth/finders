@@ -2,15 +2,13 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// yadayada
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Handle Delete
 if(isset($_GET['delete'])) {
     $id_rs = mysqli_real_escape_string($conn, $_GET['delete']);
     $query_delete = mysqli_query($conn, "DELETE FROM data_rumah_sakit WHERE id_rs = '$id_rs'");
@@ -24,11 +22,9 @@ if(isset($_GET['delete'])) {
     exit;
 }
 
-// Filter dan Search
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $filter_wilayah = isset($_GET['wilayah']) ? mysqli_real_escape_string($conn, $_GET['wilayah']) : '';
 
-// Query dengan filter
 $query_sql = "SELECT * FROM data_rumah_sakit WHERE 1=1";
 
 if($search) {
@@ -42,7 +38,6 @@ if($filter_wilayah) {
 $query_sql .= " ORDER BY nama_rs ASC";
 $result = mysqli_query($conn, $query_sql);
 
-// Query untuk dropdown wilayah
 $query_wilayah = mysqli_query($conn, "SELECT DISTINCT wilayah FROM data_rumah_sakit ORDER BY wilayah ASC");
 
 $page_title = "Data Rumah Sakit";
@@ -67,7 +62,7 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
             
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- Alert Messages -->
+            <!-- messages alert -->
             <?php if(isset($_SESSION['success_message'])): ?>
                 <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
                     <div class="flex items-center">
@@ -88,7 +83,6 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <!-- Filter & Search -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                 <div class="flex flex-wrap gap-3 items-center justify-between">
                     <form method="GET" class="flex flex-wrap gap-3 flex-1">
@@ -123,7 +117,6 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
                 </div>
             </div>
 
-            <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                     <div class="flex items-center justify-between">
@@ -167,7 +160,6 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
                 </div>
             </div>
 
-            <!-- Table -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -256,7 +248,6 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
-    <!-- Modal Overlay -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
         <div id="modalContent" class="bg-white w-[90%] max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl relative flex flex-col">
             <button onclick="closeModal()" class="absolute top-6 right-6 z-[1000] text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center transition-all">
@@ -313,7 +304,6 @@ $page_subtitle = "Kelola data rumah sakit terdaftar dalam sistem";
         }
     }
 
-    // Close modal when clicking outside
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if(e.target === this) {
             closeModal();

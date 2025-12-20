@@ -2,49 +2,49 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil data dari form
+// mengambil data dari form
 $mode = $_POST['mode'] ?? '';
 $id_admin = $_SESSION['admin_id'];
 
-// ===========================
-// FUNGSI UPLOAD FOTO
-// ===========================
+// ========================================================================+
+// FUNGSI UPLOAD FOTO                                                      |
+// cara menggunakan: $foto = uploadFoto($_FILES['foto'], $foto_lama);      |
+// jadi, jika ada foto lama, masukkan nama filenya sebagai parameter kedua |
+// ========================================================================+
 function uploadFoto($file, $foto_lama = null) {
     $target_dir = "../assets/img/";
     $allowed_types = ['image/jpeg', 'image/jpg', 'image/png'];
     $max_size = 2 * 1024 * 1024; // 2MB
     
-    // Jika tidak ada file yang diupload, gunakan foto lama atau default
+    // apabila tidak ada file yang diupload, gunakan foto lama atau default
     if($file['error'] == UPLOAD_ERR_NO_FILE) {
         return $foto_lama ?? 'default_rs.jpg';
     }
     
-    // Validasi tipe file
+    // untuk validasi tipe file foto yang akan digunakan
     if(!in_array($file['type'], $allowed_types)) {
         $_SESSION['error_message'] = "Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.";
         return false;
     }
     
-    // Validasi ukuran file
+    // kalau ini ukuran file
     if($file['size'] > $max_size) {
         $_SESSION['error_message'] = "Ukuran file terlalu besar. Maksimal 2MB.";
         return false;
     }
     
-    // Generate nama file unik
+    // menggenerate nama file baru
     $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
     $new_filename = 'rs_' . time() . '_' . uniqid() . '.' . $extension;
     $target_file = $target_dir . $new_filename;
     
-    // Upload file
+    // upload file
     if(move_uploaded_file($file['tmp_name'], $target_file)) {
         // Hapus foto lama jika ada dan bukan default
         if($foto_lama && $foto_lama != 'default_rs.jpg' && file_exists($target_dir . $foto_lama)) {
@@ -57,9 +57,12 @@ function uploadFoto($file, $foto_lama = null) {
     }
 }
 
-// ===========================
-// PROSES TAMBAH DATA
-// ===========================
+// ===============================================================+
+// PROSES TAMBAH DATA:                                            |
+// jadi, ketika mode adalah 'tambah'                              |
+// maka lakukan proses tambah data                                |
+// di mana data diambil dari form kemudian dimasukkan ke database |
+// ===============================================================+
 if($mode == 'tambah') {
     
     $nama_rs = mysqli_real_escape_string($conn, $_POST['nama_rs']);
@@ -68,21 +71,21 @@ if($mode == 'tambah') {
     $no_telpon = mysqli_real_escape_string($conn, $_POST['no_telpon']);
     $deskripsi = mysqli_real_escape_string($conn, $_POST['deskripsi']);
     
-    /* Validasi deskripsi minimal 50 karakter
+    /* Validasi deskripsi minimal 50 karakter, masih belum yakin perlu ini atau tdk
     if(strlen($deskripsi) < 50) {
         $_SESSION['error_message'] = "Deskripsi minimal 50 karakter!";
         header("Location: rs_data.php");
         exit;
     } */
     
-    // Upload foto
+    // upload foto
     $foto = uploadFoto($_FILES['foto']);
     if($foto === false) {
         header("Location: rs_data.php");
         exit;
     }
     
-    // Insert ke database
+    // insert ke dalam database
     $query = "INSERT INTO data_rumah_sakit 
               (nama_rs, alamat, wilayah, no_telpon, deskripsi, foto, id_admin, dibuat_pada) 
               VALUES 
@@ -99,7 +102,7 @@ if($mode == 'tambah') {
 }
 
 // ===========================
-// PROSES EDIT DATA
+// PROSES EDIT DATA          ||
 // ===========================
 elseif($mode == 'edit') {
     
@@ -118,14 +121,14 @@ elseif($mode == 'edit') {
         exit;
     } */
     
-    // Upload foto baru (jika ada)
+    // upload foto baru (jika ada)
     $foto = uploadFoto($_FILES['foto'], $foto_lama);
     if($foto === false) {
         header("Location: rs_data.php");
         exit;
     }
     
-    // Update database
+    // mengupdate database
     $query = "UPDATE data_rumah_sakit SET 
               nama_rs = '$nama_rs',
               alamat = '$alamat',
@@ -147,7 +150,7 @@ elseif($mode == 'edit') {
 }
 
 // ===========================
-// JIKA MODE TIDAK VALID
+// JIKA MODE TIDAK VALID     ||
 // ===========================
 else {
     $_SESSION['error_message'] = "Mode tidak valid!";

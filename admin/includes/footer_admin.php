@@ -1,3 +1,5 @@
+<!-- footer untuk semua halaman admin -->
+
 <footer class="mt-auto py-4 px-6 border-t border-gray-200 bg-white">
     <div class="flex flex-col md:flex-row justify-between items-center gap-3">
         <div class="text-sm text-gray-600">

@@ -2,15 +2,15 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// cek autentikasi admin
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // simpan halaman saat ini untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID dari URL
+// mengambil ID dari URL
 $id_jadwal = isset($_GET['id']) ? mysqli_real_escape_string($conn, $_GET['id']) : null;
 
 if(!$id_jadwal) {
@@ -19,7 +19,7 @@ if(!$id_jadwal) {
     exit;
 }
 
-// Query data penjadwalan lengkap
+// query data penjadwalan lengkap dengan info rumah sakit, layanan, dan user
 $query = mysqli_query($conn, "
     SELECT p.*, 
            rs.nama_rs, rs.alamat as alamat_rs, rs.wilayah, rs.no_telpon as telpon_rs, rs.foto as foto_rs,
@@ -40,13 +40,13 @@ if(mysqli_num_rows($query) == 0) {
 
 $data = mysqli_fetch_assoc($query);
 
-// Hitung total booking user ini
+// menghitung total booking user
 $query_total_booking = mysqli_query($conn, "
     SELECT COUNT(*) as total FROM data_penjadwalan WHERE id_user = '{$data['id_user']}'
 ");
 $total_booking_user = mysqli_fetch_assoc($query_total_booking)['total'];
 
-// Status styling
+// styling untuk status
 $status_config = [
     'Menunggu' => [
         'bg' => 'bg-yellow-50',
@@ -91,7 +91,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
     <title>Detail Penjadwalan #<?= $data['id_penjadwalan'] ?> - Admin FindeRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/styles/style_admin.css">
+    <link rel="stylesheet" href="../assets/styles/style_admin.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
@@ -102,7 +102,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
             
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- Breadcrumb -->
+            <!-- membuat breadcrumb -->
             <div class="flex items-center gap-2 text-sm mb-6">
                 <a href="index.php" class="text-gray-500 hover:text-blue-600 transition">Dashboard</a>
                 <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
@@ -113,10 +113,10 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Main Content - Left Side (2 columns) -->
+                <!-- konten utama dengan informasi detail -->
                 <div class="lg:col-span-2 space-y-6">
                     
-                    <!-- Status Card -->
+                    <!-- status -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
@@ -136,7 +136,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Pasien -->
+                    <!-- informasi pasien yang terkait -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -182,7 +182,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Rumah Sakit & Layanan -->
+                    <!-- informasi-informasi rumah sakit dan layanan -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
@@ -229,7 +229,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Antrian (Jika Dikonfirmasi) -->
+                    <!-- informasi antrian -->
                     <?php if($data['status'] == 'Dikonfirmasi' || $data['status'] == 'Selesai'): ?>
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl border-2 border-blue-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -262,10 +262,10 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
                 </div>
 
-                <!-- Sidebar - Right Side (1 column) -->
+                <!-- sidebar di bagian kanan. -->
                 <div class="space-y-6">
                     
-                    <!-- Quick Actions -->
+                    <!-- quick actionsz yo -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Aksi Cepat</h3>
                         <div class="space-y-3">
@@ -291,7 +291,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi User Pendaftar -->
+                    <!-- informasi-informasi mengenai user-user yang mendaftar -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-user-circle text-gray-600"></i>
@@ -327,13 +327,13 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                             </div>
                         </div>
 
-                        <a href="user_bookings.php?id=<?= $data['id_user'] ?>" 
+                        <a href="jadwal_data.php?id=<?= $data['id_user'] ?>" 
                            class="mt-4 block text-center text-blue-600 hover:text-blue-700 font-semibold text-sm">
                             Lihat Semua Booking User →
                         </a>
                     </div>
 
-                    <!-- Timeline Status -->
+                    <!-- timeline dari status penjadwalan -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Timeline</h3>
                         
@@ -395,7 +395,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
         </div>
     </main>
 
-    <!-- Modal Overlay -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
         <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
@@ -433,7 +432,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
     function cancelJadwal(id) {
         if(confirm('Yakin ingin membatalkan jadwal ini?\n\nPasien akan menerima notifikasi pembatalan.')) {
-            // Implementasi pembatalan
             fetch('jadwal_form.php?id=' + id, {
                 method: 'POST',
                 headers: {
@@ -452,7 +450,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
         }
     }
 
-    // Close modal when clicking outside
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if(e.target === this) {
             closeModal();

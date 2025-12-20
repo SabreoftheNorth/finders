@@ -5,13 +5,13 @@
             <p class="text-sm text-gray-500 mt-1"><?= $page_subtitle ?? 'Kelola sistem FindeRS' ?></p>
         </div>
         <div class="flex items-center gap-4">
-            <!-- Notification Bell -->
+            <!-- bell notifikasi -->
             <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
                 <i class="fa-solid fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
             
-            <!-- Current Date -->
+            <!-- tanggal sekarang -->
             <div class="text-right">
                 <p class="text-xs text-gray-500">Hari ini</p>
                 <p class="text-sm font-semibold text-gray-700"><?= date('d M Y') ?></p>

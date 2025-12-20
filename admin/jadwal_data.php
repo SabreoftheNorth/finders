@@ -2,15 +2,15 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// cek autentikasi admin
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // simpan halaman saat ini untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Handler DELETE
+// handle delete request
 if(isset($_POST['delete_id'])) {
     $id_penjadwalan = mysqli_real_escape_string($conn, $_POST['delete_id']);
     
@@ -26,12 +26,12 @@ if(isset($_POST['delete_id'])) {
     exit;
 }
 
-// Filter
+// filter dan pencarian
 $filter_status = isset($_GET['status']) ? $_GET['status'] : '';
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $filter_user = isset($_GET['user']) ? mysqli_real_escape_string($conn, $_GET['user']) : '';
 
-// Query dengan filter
+// query data penjadwalan dengan filter dan pencarian
 $query_sql = "
     SELECT p.*, rs.nama_rs, l.nama_layanan, u.nama as nama_user, u.email as user_email
     FROM data_penjadwalan p
@@ -68,7 +68,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
     <title>Data Penjadwalan - Admin FindeRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/styles/style_admin.css">
+    <link rel="stylesheet" href="../assets/styles/style_admin.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
@@ -79,11 +79,11 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
             
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- Filter & Search -->
+            <!-- filter dan pencarian -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                 <form method="GET" class="flex flex-wrap gap-3">
                     <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" 
-                           placeholder="Cari nama pasien, RS, atau NIK..." 
+                           placeholder="Cari nama pasien, RS, atau Layanan..." 
                            class="flex-1 min-w-[250px] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     
                     <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -104,7 +104,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
                 </form>
             </div>
 
-            <!-- Table -->
+            <!-- tabel data penjadwalan -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -132,9 +132,6 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
                                         <td class="px-6 py-4 text-sm font-medium text-gray-800">#<?= $row['id_penjadwalan'] ?></td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-medium text-gray-800"><?= htmlspecialchars($row['nama_pasien']) ?></div>
-                                            <div class="text-xs text-gray-500">
-                                                NIK: <?= $row['no_nik'] ?? '-' ?>
-                                            </div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_rs']) ?></td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_layanan']) ?></td>
@@ -175,7 +172,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
-    <!-- Modal Overlay untuk Update Status -->
+    <!-- modal overlay untuk update status -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-[999] flex items-center justify-center p-4">
         <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative">
         <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
@@ -188,21 +185,21 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
     </div>
 
     <script>
-    // ===== FUNGSI UPDATE STATUS =====
+    // fungsi buka form update status di modal
     function updateStatus(id) {
         openModal('jadwal_form.php?id=' + id);
     }
 
-    // ===== FUNGSI BARU: HANDLE SUBMIT VIA AJAX =====
-    // Fungsi ini akan dipanggil oleh form di dalam modal
+    // fungsi submit form update status via AJAX
+    // kemudian fungsi ini akan dipanggil oleh form di dalam modal
     function submitUpdateJadwal(event, id) {
-        event.preventDefault(); // Mencegah refresh halaman
+        event.preventDefault(); // mencegah refresh halaman
         
         const form = document.getElementById('formUpdateJadwal');
         const formData = new FormData(form);
         const url = 'jadwal_form.php?id=' + id;
         
-        // Ubah tombol jadi loading
+        // ubah tombol jadi loading
         const btn = form.querySelector('button[type="submit"]');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
@@ -214,12 +211,12 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         })
         .then(response => response.text())
         .then(html => {
-            // Cek apakah respon mengandung script sukses dari PHP
+            // untuk mengecek apakah update berhasil. debug: ???
             if (html.includes('alert("Status penjadwalan berhasil diupdate!");')) {
                 alert("Status penjadwalan berhasil diupdate!");
-                window.location.reload(); // Refresh halaman utama
+                window.location.reload(); // mengrefresh halaman setelah update. wayyy
             } else {
-                // Jika error atau validasi gagal, tampilkan kembali form (dengan pesan error)
+                // APABILA update gagal, tampilkan kembali form dengan pesan error
                 document.getElementById('modalBody').innerHTML = html;
             }
         })
@@ -231,7 +228,8 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         });
     }
 
-    // ===== FUNGSI DELETE JADWAL (TETAP SAMA) =====
+    // function untuk menghapus data penjadwalan
+    // akan membuat form dan submit secara otomatis
     function deleteJadwal(id) {
         if(confirm('Yakin ingin menghapus data penjadwalan ini?\n\nData tidak dapat dikembalikan!')) {
         const form = document.createElement('form');
@@ -247,21 +245,22 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         }
     }
 
-    // ===== FUNGSI BUKA MODAL (TETAP SAMA, TAPI ID TARGET DISESUAIKAN) =====
+    // function untuk membuka modal dan memuat konten via AJAX
+    // namun di sini ada perbaikan target elemen konten modal
     function openModal(url) {
         const overlay = document.getElementById('modalOverlay');
-        const content = document.getElementById('modalBody'); // Perbaikan target ke modalBody
+        const content = document.getElementById('modalBody');
         
         if(overlay && content) {
         overlay.classList.remove('hidden');
-        // Loading state
         content.innerHTML = `
         <div class="bg-white p-6 rounded-2xl shadow-xl flex items-center gap-3 animate-pulse">
             <div class="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             <span class="font-medium text-gray-600">Memuat data...</span>
         </div>`;
         
-        // Fetch data
+        // melakukan sebuah fetch ke URL dan menampilkan hasilnya di dalam modal
+        // modal=overlay tak?
         fetch(url)
         .then(response => {
             if (!response.ok) throw new Error('Network error');
@@ -277,7 +276,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         }
     }
 
-    // ===== FUNGSI TUTUP MODAL (TETAP SAMA) =====
+    // function untjk menutup modal
     function closeModal() {
         const overlay = document.getElementById('modalOverlay');
         if(overlay) {
@@ -285,7 +284,7 @@ $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
         }
     }
 
-    // Close modal saat klik di luar
+    // menutup modal saat klik di luar konten modal
     document.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('modalOverlay');
         if(overlay) {

@@ -1,5 +1,5 @@
 <aside class="w-64 bg-white shadow-lg flex flex-col h-full border-r border-gray-200">
-    <!-- Logo & Brand -->
+    <!-- logoo -->
     <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 flex items-center justify-center">
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- menu navigasi -->
     <nav class="flex-1 overflow-y-auto py-4 px-3">
         <div class="space-y-1">
             <?php
@@ -40,7 +40,7 @@
         </div>
     </nav>
 
-    <!-- Admin Profile -->
+    <!-- profil admin -->
     <div class="p-4 border-t border-gray-200">
         <div class="flex items-center gap-3 mb-3">
             <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
