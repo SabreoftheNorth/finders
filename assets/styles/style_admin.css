@@ -234,3 +234,9 @@ a:focus, button:focus, input:focus, select:focus, textarea:focus{ outline: 3px s
 .admin code, .admin kbd { background: rgba(15,23,42,0.04); padding:3px 6px; border-radius:4px; font-family: var(--mono-font); font-size:0.9rem }
 
 :not(body[class*="admin"]):not(.admin):not(.admin-page):not(#admin):not(#admin-panel) .admin-only, .admin .admin-only { display:block }
+
+@media print {
+  body {
+    background: white;
+  }
+}
