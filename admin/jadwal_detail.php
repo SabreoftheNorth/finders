@@ -152,17 +152,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                     <p class="text-base font-semibold text-gray-800 mt-1"><?= htmlspecialchars($data['nama_pasien']) ?></p>
                                 </div>
                                 <div>
-                                    <label class="text-xs font-semibold text-gray-500 uppercase">NIK</label>
-                                    <p class="text-base font-medium text-gray-800 mt-1"><?= $data['no_nik'] ?? '-' ?></p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-semibold text-gray-500 uppercase">No. Telepon</label>
-                                    <p class="text-base font-medium text-gray-800 mt-1 flex items-center gap-2">
-                                        <i class="fa-solid fa-phone text-green-600 text-sm"></i>
-                                        <?= htmlspecialchars($user['no_telp'] ?? '-') ?>
-                                    </p>
-                                </div>
-                                <div>
                                     <label class="text-xs font-semibold text-gray-500 uppercase">Tanggal Kunjungan</label>
                                     <p class="text-base font-medium text-gray-800 mt-1 flex items-center gap-2">
                                         <i class="fa-solid fa-calendar text-blue-600 text-sm"></i>
@@ -262,6 +251,52 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
                 </div>
 
+                <!-- modal untuk mencetak tiket detail penjadwalan user -->
+                <div id="ticketModal" class="fixed inset-0 bg-black/60 hidden z-[999] flex items-center justify-center p-4">
+                    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative">
+
+                        <!-- headernya -->
+                        <div class="flex justify-between items-center px-6 py-4 border-b">
+                        <h3 class="font-bold text-lg">Tiket Penjadwalan</h3>
+                        <button onclick="closeTicketModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        </div>
+
+                        <!-- isi dari tiket tersebut -->
+                        <div id="ticketContent" class="p-6 space-y-4 text-sm">
+
+                        <div class="text-center">
+                            <img src="../assets/img/FindeRS_Logo.png" class="h-12 mx-auto mb-2">
+                            <p class="font-bold text-base">TIKET KUNJUNGAN</p>
+                            <p class="text-xs text-gray-500">#<?= $data['id_penjadwalan'] ?></p>
+                        </div>
+
+                        <hr>
+
+                        <div class="space-y-2">
+                            <p><strong>Nama Pasien:</strong> <?= htmlspecialchars($data['nama_pasien']) ?></p>
+                            <p><strong>Rumah Sakit:</strong> <?= htmlspecialchars($data['nama_rs']) ?></p>
+                            <p><strong>Layanan:</strong> <?= htmlspecialchars($data['nama_layanan']) ?></p>
+                            <p><strong>Tanggal:</strong> <?= date('d F Y', strtotime($data['tanggal_kunjungan'])) ?></p>
+                            <p><strong>Jam:</strong> <?= $data['jam_mulai'] ?> - <?= $data['jam_selesai'] ?></p>
+                            <p><strong>No. Antrian:</strong> <?= $data['queue_number'] ?? '-' ?></p>
+                        </div>
+
+                        </div>
+
+                        <!-- footer -->
+                        <div class="px-6 py-4 border-t flex justify-end gap-3">
+                        <button onclick="downloadTicket()"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            Download Tiket
+                        </button>
+                        </div>
+
+                    </div>
+                </div>
+
                 <!-- sidebar di bagian kanan. -->
                 <div class="space-y-6">
                     
@@ -275,12 +310,12 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                 Update Status
                             </button>
                             
-                            <button onclick="printTicket()" 
+                           <button onclick="openTicketModal()"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-print"></i>
+                                <i class="fa-solid fa-ticket"></i>
                                 Cetak Tiket
                             </button>
-                            
+
                             <?php if($data['status'] == 'Menunggu'): ?>
                             <button onclick="cancelJadwal(<?= $data['id_penjadwalan'] ?>)" 
                                     class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
@@ -448,6 +483,29 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                 alert('Gagal membatalkan jadwal');
             });
         }
+    }
+
+    function openTicketModal() {
+        document.getElementById('ticketModal').classList.remove('hidden');
+    }
+
+    function closeTicketModal() {
+        document.getElementById('ticketModal').classList.add('hidden');
+    }
+
+    function downloadTicket() {
+        const printContents = document.getElementById('ticketContent').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = `
+            <div style="padding:20px; font-family: Arial">
+            ${printContents}
+            </div>
+        `;
+
+        window.print();
+        document.body.innerHTML = originalContents;
+        location.reload();
     }
 
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
