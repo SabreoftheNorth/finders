@@ -45,8 +45,13 @@ if($filter_status) {
     $query_sql .= " AND p.status = '$filter_status'";
 }
 
-if($search) {
-    $query_sql .= " AND (p.nama_pasien LIKE '%$search%' OR rs.nama_rs LIKE '%$search%' OR p.no_nik LIKE '%$search%')";
+if($search) { 
+    $query_sql .= " AND (
+        p.nama_pasien LIKE '%$search%' 
+        OR rs.nama_rs LIKE '%$search%' 
+        OR l.nama_layanan LIKE '%$search%' 
+        OR u.email LIKE '%$search%'
+    )"; 
 }
 
 if($filter_user) {
@@ -56,6 +61,10 @@ if($filter_user) {
 $query_sql .= " ORDER BY p.dibuat_pada DESC";
 
 $result = mysqli_query($conn, $query_sql);
+
+if(!$result){
+    die("Query Error: " . mysqli_error($conn));
+}
 
 $page_title = "Data Penjadwalan";
 $page_subtitle = "Kelola semua penjadwalan kunjungan rumah sakit";
