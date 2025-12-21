@@ -1,7 +1,8 @@
 <?php
 require_once '../config/db_connect.php';
 
-// Ambil ID dari URL
+// mengambil id penjadwalan dari query string
+// validasi input untuk mencegah SQL Injection
 $id_jadwal = isset($_GET['id']) ? mysqli_real_escape_string($conn, $_GET['id']) : null;
 
 if(!$id_jadwal) {
@@ -9,7 +10,7 @@ if(!$id_jadwal) {
     exit;
 }
 
-// Query data penjadwalan
+// query untuk mengambil data penjadwalan beserta info terkait
 $query = mysqli_query($conn, "
     SELECT p.*, rs.nama_rs, l.nama_layanan,
            u.nama as nama_user, u.email, u.no_telpon as telpon_user
@@ -27,15 +28,15 @@ if(mysqli_num_rows($query) == 0) {
 
 $data = mysqli_fetch_assoc($query);
 
-// =============================
-// Handle form submit (AJAX / normal)
-// =============================
+// handle form submission menggunakan metode POST dan AJAX
+// AJAX adalah pada bagian frontend (JavaScript)
+// di mana form akan dikirim via AJAX ke halaman ini
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $status_baru   = mysqli_real_escape_string($conn, $_POST['status']);
     $queue_number  = mysqli_real_escape_string($conn, $_POST['queue_number']);
     $catatan_admin = mysqli_real_escape_string($conn, $_POST['catatan_admin']);
 
-    // PERBAIKAN: pakai jam_mulai & jam_selesai
+    // PERBAIKAN!!!: pakai jam_mulai & jam_selesai
     $jam_mulai   = !empty($_POST['jam_mulai']) 
                     ? "'" . mysqli_real_escape_string($conn, $_POST['jam_mulai']) . "'" 
                     : "NULL";
@@ -44,13 +45,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
                     ? "'" . mysqli_real_escape_string($conn, $_POST['jam_selesai']) . "'" 
                     : "NULL";
 
-    // Append catatan admin
+    // menggabungkan catatan admin dengan catatan sebelumnya
     $catatan_update = $data['catatan'];
     if(!empty($catatan_admin)) {
         $catatan_update .= "\n[Admin] " . $catatan_admin;
     }
 
-    // QUERY UPDATE (SUDAH SESUAI DB)
+    // SUDAH SESUAI DATABASEE
     $update_query = "UPDATE data_penjadwalan SET
         status = '$status_baru',
         queue_number = " . (!empty($queue_number) ? "'$queue_number'" : "NULL") . ",
@@ -85,7 +86,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     <?php endif; ?>
 
-    <!-- Informasi Penjadwalan -->
+    <!-- info penjadwalan -->
     <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-xl p-6 mb-6 border border-blue-200">
         <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
             <i class="fa-solid fa-info-circle text-blue-600"></i>
@@ -139,7 +140,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <!-- Form Update Status -->
+    <!-- form utk mengupdate statusnya -->
     <form id="formUpdateJadwal"
           onsubmit="submitUpdateJadwal(event, <?= $id_jadwal ?>)"
           class="space-y-6">

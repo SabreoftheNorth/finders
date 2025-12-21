@@ -2,15 +2,15 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// cek autentikasi admin
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // simpan halaman saat ini untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Ambil ID dari URL
+// mengambil ID dari URL
 $id_jadwal = isset($_GET['id']) ? mysqli_real_escape_string($conn, $_GET['id']) : null;
 
 if(!$id_jadwal) {
@@ -19,7 +19,7 @@ if(!$id_jadwal) {
     exit;
 }
 
-// Query data penjadwalan lengkap
+// query data penjadwalan lengkap dengan info rumah sakit, layanan, dan user
 $query = mysqli_query($conn, "
     SELECT p.*, 
            rs.nama_rs, rs.alamat as alamat_rs, rs.wilayah, rs.no_telpon as telpon_rs, rs.foto as foto_rs,
@@ -40,13 +40,13 @@ if(mysqli_num_rows($query) == 0) {
 
 $data = mysqli_fetch_assoc($query);
 
-// Hitung total booking user ini
+// menghitung total booking user
 $query_total_booking = mysqli_query($conn, "
     SELECT COUNT(*) as total FROM data_penjadwalan WHERE id_user = '{$data['id_user']}'
 ");
 $total_booking_user = mysqli_fetch_assoc($query_total_booking)['total'];
 
-// Status styling
+// styling untuk status
 $status_config = [
     'Menunggu' => [
         'bg' => 'bg-yellow-50',
@@ -91,7 +91,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
     <title>Detail Penjadwalan #<?= $data['id_penjadwalan'] ?> - Admin FindeRS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/styles/style_admin.css">
+    <link rel="stylesheet" href="../assets/styles/style_admin.css">
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
@@ -102,7 +102,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
             
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- Breadcrumb -->
+            <!-- membuat breadcrumb -->
             <div class="flex items-center gap-2 text-sm mb-6">
                 <a href="index.php" class="text-gray-500 hover:text-blue-600 transition">Dashboard</a>
                 <i class="fa-solid fa-chevron-right text-gray-400 text-xs"></i>
@@ -113,10 +113,10 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Main Content - Left Side (2 columns) -->
+                <!-- konten utama dengan informasi detail -->
                 <div class="lg:col-span-2 space-y-6">
                     
-                    <!-- Status Card -->
+                    <!-- status -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
@@ -136,7 +136,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Pasien -->
+                    <!-- informasi pasien yang terkait -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -150,17 +150,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                 <div>
                                     <label class="text-xs font-semibold text-gray-500 uppercase">Nama Pasien</label>
                                     <p class="text-base font-semibold text-gray-800 mt-1"><?= htmlspecialchars($data['nama_pasien']) ?></p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-semibold text-gray-500 uppercase">NIK</label>
-                                    <p class="text-base font-medium text-gray-800 mt-1"><?= $data['no_nik'] ?? '-' ?></p>
-                                </div>
-                                <div>
-                                    <label class="text-xs font-semibold text-gray-500 uppercase">No. Telepon</label>
-                                    <p class="text-base font-medium text-gray-800 mt-1 flex items-center gap-2">
-                                        <i class="fa-solid fa-phone text-green-600 text-sm"></i>
-                                        <?= htmlspecialchars($user['no_telp'] ?? '-') ?>
-                                    </p>
                                 </div>
                                 <div>
                                     <label class="text-xs font-semibold text-gray-500 uppercase">Tanggal Kunjungan</label>
@@ -182,7 +171,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Rumah Sakit & Layanan -->
+                    <!-- informasi-informasi rumah sakit dan layanan -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
@@ -229,7 +218,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi Antrian (Jika Dikonfirmasi) -->
+                    <!-- informasi antrian -->
                     <?php if($data['status'] == 'Dikonfirmasi' || $data['status'] == 'Selesai'): ?>
                     <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl border-2 border-blue-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -262,10 +251,56 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
                 </div>
 
-                <!-- Sidebar - Right Side (1 column) -->
+                <!-- modal untuk mencetak tiket detail penjadwalan user -->
+                <div id="ticketModal" class="fixed inset-0 bg-black/60 hidden z-[999] flex items-center justify-center p-4">
+                    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl relative">
+
+                        <!-- headernya -->
+                        <div class="flex justify-between items-center px-6 py-4 border-b">
+                        <h3 class="font-bold text-lg">Tiket Penjadwalan</h3>
+                        <button onclick="closeTicketModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        </div>
+
+                        <!-- isi dari tiket tersebut -->
+                        <div id="ticketContent" class="p-6 space-y-4 text-sm">
+
+                        <div class="text-center">
+                            <img src="../assets/img/FindeRS_Logo.png" class="h-12 mx-auto mb-2">
+                            <p class="font-bold text-base">TIKET KUNJUNGAN</p>
+                            <p class="text-xs text-gray-500">#<?= $data['id_penjadwalan'] ?></p>
+                        </div>
+
+                        <hr>
+
+                        <div class="space-y-2">
+                            <p><strong>Nama Pasien:</strong> <?= htmlspecialchars($data['nama_pasien']) ?></p>
+                            <p><strong>Rumah Sakit:</strong> <?= htmlspecialchars($data['nama_rs']) ?></p>
+                            <p><strong>Layanan:</strong> <?= htmlspecialchars($data['nama_layanan']) ?></p>
+                            <p><strong>Tanggal:</strong> <?= date('d F Y', strtotime($data['tanggal_kunjungan'])) ?></p>
+                            <p><strong>Jam:</strong> <?= $data['jam_mulai'] ?> - <?= $data['jam_selesai'] ?></p>
+                            <p><strong>No. Antrian:</strong> <?= $data['queue_number'] ?? '-' ?></p>
+                        </div>
+
+                        </div>
+
+                        <!-- footer -->
+                        <div class="px-6 py-4 border-t flex justify-end gap-3">
+                        <button onclick="downloadTicket()"
+                            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i>
+                            Download Tiket
+                        </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- sidebar di bagian kanan. -->
                 <div class="space-y-6">
                     
-                    <!-- Quick Actions -->
+                    <!-- quick actionsz yo -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Aksi Cepat</h3>
                         <div class="space-y-3">
@@ -275,12 +310,12 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                                 Update Status
                             </button>
                             
-                            <button onclick="printTicket()" 
+                           <button onclick="openTicketModal()"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-print"></i>
+                                <i class="fa-solid fa-ticket"></i>
                                 Cetak Tiket
                             </button>
-                            
+
                             <?php if($data['status'] == 'Menunggu'): ?>
                             <button onclick="cancelJadwal(<?= $data['id_penjadwalan'] ?>)" 
                                     class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
@@ -291,7 +326,7 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                         </div>
                     </div>
 
-                    <!-- Informasi User Pendaftar -->
+                    <!-- informasi-informasi mengenai user-user yang mendaftar -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-user-circle text-gray-600"></i>
@@ -327,13 +362,13 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
                             </div>
                         </div>
 
-                        <a href="user_bookings.php?id=<?= $data['id_user'] ?>" 
+                        <a href="jadwal_data.php?id=<?= $data['id_user'] ?>" 
                            class="mt-4 block text-center text-blue-600 hover:text-blue-700 font-semibold text-sm">
                             Lihat Semua Booking User →
                         </a>
                     </div>
 
-                    <!-- Timeline Status -->
+                    <!-- timeline dari status penjadwalan -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-800 mb-4">Timeline</h3>
                         
@@ -395,7 +430,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
         </div>
     </main>
 
-    <!-- Modal Overlay -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
         <div id="modalContent" class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
@@ -433,7 +467,6 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
 
     function cancelJadwal(id) {
         if(confirm('Yakin ingin membatalkan jadwal ini?\n\nPasien akan menerima notifikasi pembatalan.')) {
-            // Implementasi pembatalan
             fetch('jadwal_form.php?id=' + id, {
                 method: 'POST',
                 headers: {
@@ -452,7 +485,29 @@ $page_subtitle = "Informasi lengkap penjadwalan kunjungan pasien";
         }
     }
 
-    // Close modal when clicking outside
+    function openTicketModal() {
+        document.getElementById('ticketModal').classList.remove('hidden');
+    }
+
+    function closeTicketModal() {
+        document.getElementById('ticketModal').classList.add('hidden');
+    }
+
+    function downloadTicket() {
+        const printContents = document.getElementById('ticketContent').innerHTML;
+        const originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = `
+            <div style="padding:20px; font-family: Arial">
+            ${printContents}
+            </div>
+        `;
+
+        window.print();
+        document.body.innerHTML = originalContents;
+        location.reload();
+    }
+
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if(e.target === this) {
             closeModal();

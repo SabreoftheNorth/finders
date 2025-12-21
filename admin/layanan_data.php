@@ -2,14 +2,15 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// cek login admin
 if (!isset($_SESSION['admin_id'])) {
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// ===== HANDLER TAMBAH/EDIT LAYANAN =====
+// sebuah handler utk tambah & edit layanan
+// tambah & edit pake metode POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mode'])) {
     $mode = $_POST['mode'];
     $id_rs = mysqli_real_escape_string($conn, $_POST['id_rs']);
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mode'])) {
     exit;
 }
 
-// ===== HANDLER DELETE =====
+// handler delete
 if (isset($_GET['delete'])) {
     $id_layanan = mysqli_real_escape_string($conn, $_GET['delete']);
     $stmt = mysqli_prepare($conn, "DELETE FROM data_layanan_rs WHERE id_layanan = ?");
@@ -64,7 +65,8 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ===== AJAX GET DATA UNTUK EDIT =====
+// menggunakan ajax utk ambil data layanan saat edit
+// request ajax
 if (isset($_GET['ajax']) && $_GET['ajax'] === 'get' && isset($_GET['id'])) {
     header('Content-Type: application/json');
     $id_layanan = mysqli_real_escape_string($conn, $_GET['id']);
@@ -79,12 +81,11 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'get' && isset($_GET['id'])) {
     exit;
 }
 
-// Filter dan Search
+// all php
 $search = $_GET['search'] ?? '';
 $filter_rs = $_GET['rs'] ?? '';
 $filter_kategori = $_GET['kategori'] ?? '';
 
-// Base Query
 $query_sql = "
 SELECT l.*, rs.nama_rs, rs.wilayah
 FROM data_layanan_rs l
@@ -92,19 +93,16 @@ JOIN data_rumah_sakit rs ON l.id_rs = rs.id_rs
 WHERE 1=1
 ";
 
-// Search
 if ($search) {
     $safe = mysqli_real_escape_string($conn, $search);
     $query_sql .= " AND (l.nama_layanan LIKE '%$safe%' OR rs.nama_rs LIKE '%$safe%')";
 }
 
-// Filter RS
 if ($filter_rs) {
     $safe = mysqli_real_escape_string($conn, $filter_rs);
     $query_sql .= " AND l.id_rs = '$safe'";
 }
 
-// Filter Kategori
 if ($filter_kategori) {
     $safe = mysqli_real_escape_string($conn, $filter_kategori);
     $query_sql .= " AND l.kategori = '$safe'";
@@ -113,10 +111,10 @@ if ($filter_kategori) {
 $query_sql .= " ORDER BY rs.nama_rs ASC, l.nama_layanan ASC";
 $result = mysqli_query($conn, $query_sql);
 
-// Dropdown RS
+// dropdown utk menampilkan rumah sakit
 $query_rs_list = mysqli_query($conn, "SELECT id_rs, nama_rs FROM data_rumah_sakit ORDER BY nama_rs ASC");
 
-// Dropdown kategori
+// dropdown utk kategori layanan
 $query_kategori_list = mysqli_query($conn, "SELECT DISTINCT kategori FROM data_layanan_rs ORDER BY kategori ASC");
 
 $page_title = "Data Layanan";
@@ -139,7 +137,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 <div class="p-6 flex-1">
 <?php include 'includes/header_admin.php'; ?>
 
-<!-- Alerts -->
 <?php if(isset($_SESSION['success_message'])): ?>
 <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
     <div class="flex items-center">
@@ -158,7 +155,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 </div>
 <?php unset($_SESSION['error_message']); endif; ?>
 
-<!-- Filter & Search -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
     <div class="flex flex-wrap gap-3 items-center justify-between">
         <form method="GET" class="flex flex-wrap gap-3 flex-1">
@@ -199,7 +195,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
     </div>
 </div>
 
-<!-- Statistics -->
 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <div class="bg-white p-5 rounded-xl shadow-sm border">
         <p class="text-sm text-gray-500">Total Layanan</p>
@@ -232,7 +227,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
     </div>
 </div>
 
-<!-- Table -->
 <div class="bg-white rounded-2xl shadow-sm border">
     <div class="overflow-x-auto">
         <table class="w-full">
@@ -304,7 +298,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
 <?php include 'includes/footer_admin.php'; ?>
 </main>
 
-<!-- Modal Form Layanan -->
 <div id="modalFormLayanan" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] flex items-center justify-center p-4">
     <div class="bg-white w-[90%] max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative">
         <button onclick="closeFormModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
@@ -323,7 +316,7 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                 <input type="hidden" name="mode" id="mode" value="tambah">
                 <input type="hidden" name="id_layanan" id="id_layanan" value="">
 
-                <!-- Pilih Rumah Sakit -->
+                <!-- memilih rs -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Rumah Sakit <span class="text-red-500">*</span>
@@ -339,7 +332,7 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                     </select>
                 </div>
 
-                <!-- Nama Layanan -->
+                <!-- menampilkan nama-nama layanan -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Nama Layanan <span class="text-red-500">*</span>
@@ -347,7 +340,7 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                     <input type="text" name="nama_layanan" id="form_nama_layanan" required placeholder="Contoh: Poliklinik Umum, Bedah Jantung" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
 
-                <!-- Kategori -->
+                <!-- kategori -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Kategori <span class="text-red-500">*</span>
@@ -363,7 +356,7 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                     </select>
                 </div>
 
-                <!-- Ketersediaan -->
+                <!-- utk mengecek ketersediaan layanan -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Ketersediaan Layanan
@@ -374,7 +367,6 @@ $page_subtitle = "Kelola layanan medis di setiap rumah sakit";
                     </select>
                 </div>
 
-                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
                     <button type="button" onclick="closeFormModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition">
                         <i class="fa-solid fa-times mr-2"></i> Batal
@@ -437,7 +429,6 @@ function deleteLayanan(id, name) {
     }
 }
 
-// Close modal on outside click
 document.getElementById('modalFormLayanan')?.addEventListener('click', function(e) {
     if(e.target === this) closeFormModal();
 });

@@ -33,22 +33,22 @@ if(mysqli_num_rows($query) == 0) {
 
 $rs = mysqli_fetch_assoc($query);
 
-// Get layanan count
+// get layanan count
 $query_layanan = mysqli_query($conn, "SELECT COUNT(*) as total FROM layanan_rs WHERE id_rs = '$id_rs'");
 $layanan_count = $query_layanan ? mysqli_fetch_assoc($query_layanan)['total'] : 0;
 
-// Get jadwal count
+// get jadwal count
 $query_jadwal = mysqli_query($conn, "SELECT COUNT(*) as total FROM jadwal_layanan WHERE id_rs = '$id_rs'");
 $jadwal_count = $query_jadwal ? mysqli_fetch_assoc($query_jadwal)['total'] : 0;
 
-// Get booking count
+// get booking count
 $query_booking = mysqli_query($conn, "SELECT COUNT(*) as total FROM booking b 
                                       JOIN jadwal_layanan jl ON b.id_jadwal = jl.id_jadwal 
                                       WHERE jl.id_rs = '$id_rs'");
 $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 0;
 ?>
 
-<!-- Header Modal Simpel -->
+<!-- header modal simpel -->
 <div class="bg-white -mx-8 -mt-8 mb-6 pb-5 border-b border-gray-200">
     <div class="px-8 pt-6 flex items-center gap-3">
         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -59,7 +59,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
 </div>
 
 <div class="space-y-5 -mx-8 px-8 -mb-8 pb-8">
-    <!-- Foto & Info Utama -->
+    <!-- foto & info utama -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <div class="lg:col-span-1">
             <div class="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
@@ -70,7 +70,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
             </div>
         </div>
 
-        <!-- Info Utama -->
+        <!-- info utama -->
         <div class="lg:col-span-2 space-y-4">
             <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div class="flex items-center gap-2 mb-3">
@@ -89,7 +89,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
                 </div>
             </div>
 
-            <!-- Alamat & Wilayah -->
+            <!-- alamat & wilayah -->
             <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div class="flex items-center gap-2 mb-3">
                     <i class="fa-solid fa-location-dot text-blue-600"></i>
@@ -109,7 +109,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
                 </div>
             </div>
 
-            <!-- Kontak -->
+            <!-- kontak -->
             <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                 <div class="flex items-center gap-2 mb-3">
                     <i class="fa-solid fa-phone text-blue-600"></i>
@@ -123,7 +123,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
         </div>
     </div>
 
-    <!-- Deskripsi -->
+    <!-- deskripsi -->
     <?php if(!empty($rs['deskripsi'])): ?>
     <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
         <div class="flex items-center gap-2 mb-3">
@@ -134,7 +134,7 @@ $booking_count = $query_booking ? mysqli_fetch_assoc($query_booking)['total'] : 
     </div>
     <?php endif; ?>
 
-    <!-- Action Buttons -->
+    <!-- action Buttons -->
     <div class="flex gap-3 pt-4 sticky bottom-0 bg-white pb-4 border-t border-gray-200 mt-4">
         <button onclick="closeModal()" 
                 class="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">

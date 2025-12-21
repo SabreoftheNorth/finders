@@ -2,15 +2,15 @@
 session_start();
 require_once '../config/db_connect.php';
 
-// Cek Login Admin
+// cek login dari admin
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // simpanin URL tujuan untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Query statistik
+// query statistik
 $query_total_penjadwalan = mysqli_query($conn, "SELECT COUNT(*) as total FROM data_penjadwalan");
 $total_penjadwalan = mysqli_fetch_assoc($query_total_penjadwalan)['total'];
 
@@ -23,7 +23,7 @@ $total_layanan = mysqli_fetch_assoc($query_total_layanan)['total'];
 $query_total_users = mysqli_query($conn, "SELECT COUNT(*) as total FROM akun_user");
 $total_users = mysqli_fetch_assoc($query_total_users)['total'];
 
-// Query penjadwalan terbaru
+// query penjadwalan baru
 $query_penjadwalan = mysqli_query($conn, "
     SELECT p.*, rs.nama_rs, l.nama_layanan, u.nama as nama_user
     FROM data_penjadwalan p
@@ -37,6 +37,8 @@ $query_penjadwalan = mysqli_query($conn, "
 $page_title = "Dashboard";
 $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
 ?>
+
+<!-- file html utama -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -62,20 +64,20 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
 </head>
 <body class="bg-gray-50 flex h-screen overflow-hidden">
     
-    <!-- SIDEBAR -->
+    <!-- sidebar -->
     <?php include 'includes/sidebar_admin.php'; ?>
 
-    <!-- MAIN CONTENT -->
+    <!-- konten utama -->
     <main class="flex-1 overflow-y-auto">
         <div class="p-6">
             
-            <!-- HEADER -->
+            <!-- header, menginclude file includes/header_admin.php -->
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- STATISTICS CARDS -->
+            <!-- kartu-kartu statistik -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 
-                <!-- Card: Total Penjadwalan -->
+                <!-- jumlah total penjadwalan -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition animate-fade-in-up">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
@@ -92,7 +94,7 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
                     </a>
                 </div>
 
-                <!-- Card: Data Rumah Sakit -->
+                <!-- jumlah data rumah sakit -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition animate-fade-in-up delay-100">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -106,7 +108,7 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
                     </a>
                 </div>
 
-                <!-- Card: Data Layanan -->
+                <!-- data-data layanan -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition animate-fade-in-up delay-200">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
@@ -120,7 +122,7 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
                     </a>
                 </div>
 
-                <!-- Card: Akun User -->
+                <!-- akun-akun user -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition animate-fade-in-up delay-300">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
@@ -136,7 +138,7 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
 
             </div>
 
-            <!-- TABEL PENJADWALAN TERBARU -->
+            <!-- tabel untuk penjadwalan terbaru -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 animate-fade-in-up">
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex justify-between items-center">
@@ -178,7 +180,6 @@ $page_subtitle = "Ringkasan sistem dan aktivitas terkini";
                                         <td class="px-6 py-4 text-sm font-medium text-gray-800">#<?= $row['id_penjadwalan'] ?></td>
                                         <td class="px-6 py-4">
                                             <div class="text-sm font-medium text-gray-800"><?= htmlspecialchars($row['nama_pasien']) ?></div>
-                                            <div class="text-xs text-gray-500">User: <?= htmlspecialchars($row['nama_user']) ?></div>
                                         </td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_rs']) ?></td>
                                         <td class="px-6 py-4 text-sm text-gray-600"><?= htmlspecialchars($row['nama_layanan']) ?></td>

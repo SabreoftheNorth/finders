@@ -1,7 +1,10 @@
 <?php
 require_once '../config/db_connect.php';
 
-// Cek apakah mode EDIT atau TAMBAH
+// mengecek apakah yang dilakukan user adalah edit atau tambah
+// jika ada id_rs di query string, berarti edit
+// namun jika tidak ada, berarti tambah
+// validasi input untuk mencegah SQL Injection
 $id_rs = isset($_GET['id']) ? mysqli_real_escape_string($conn, $_GET['id']) : null;
 $mode = $id_rs ? 'edit' : 'tambah';
 
@@ -15,7 +18,8 @@ $data = [
     'foto' => 'default_rs.jpg'
 ];
 
-// Jika mode EDIT, ambil data dari database
+// untuk case edit, ambil data dari database
+// dan isi ke dalam array $data
 if($mode == 'edit') {
     $query = mysqli_query($conn, "SELECT * FROM data_rumah_sakit WHERE id_rs = '$id_rs'");
     if(mysqli_num_rows($query) > 0) {
@@ -26,7 +30,7 @@ if($mode == 'edit') {
     }
 }
 
-// Daftar wilayah Jakarta (bisa disesuaikan)
+// daftar wilayah
 $wilayah_options = [
     'Jakarta Pusat',
     'Jakarta Utara',
@@ -47,14 +51,13 @@ $wilayah_options = [
 
     <form action="rs_proses.php" method="POST" enctype="multipart/form-data" class="space-y-6">
         
-        <!-- Hidden input untuk mode -->
+        <!-- hmm -->
         <input type="hidden" name="mode" value="<?= $mode ?>">
         <?php if($mode == 'edit'): ?>
             <input type="hidden" name="id_rs" value="<?= $data['id_rs'] ?>">
             <input type="hidden" name="foto_lama" value="<?= $data['foto'] ?>">
         <?php endif; ?>
 
-        <!-- Nama RS -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Nama Rumah Sakit <span class="text-red-500">*</span>
@@ -65,7 +68,6 @@ $wilayah_options = [
                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
         </div>
 
-        <!-- Alamat -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Alamat Lengkap <span class="text-red-500">*</span>
@@ -75,7 +77,6 @@ $wilayah_options = [
                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"><?= htmlspecialchars($data['alamat']) ?></textarea>
         </div>
 
-        <!-- Wilayah & No Telpon -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -103,7 +104,6 @@ $wilayah_options = [
             </div>
         </div>
 
-        <!-- Deskripsi -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Deskripsi Rumah Sakit <span class="text-red-500">*</span>
@@ -114,7 +114,6 @@ $wilayah_options = [
             <p class="text-xs text-gray-500 mt-1">Tidak ada batasan karakter</p>
         </div>
 
-        <!-- Upload Foto -->
         <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2">
                 Foto Rumah Sakit
@@ -138,7 +137,6 @@ $wilayah_options = [
             </p>
         </div>
 
-        <!-- Info Box -->
         <div class="bg-blue-50 p-4 rounded-lg">
             <div class="flex items-start gap-3">
                 <i class="fa-solid fa-info-circle text-blue-600 mt-0.5"></i>
@@ -154,7 +152,6 @@ $wilayah_options = [
             </div>
         </div>
 
-        <!-- Buttons -->
         <div class="flex gap-3 pt-4">
             <button type="button" onclick="window.parent.closeModal()" 
                     class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition flex items-center justify-center gap-2">
@@ -175,7 +172,8 @@ $wilayah_options = [
 </div>
 
 <script>
-// Preview image before upload
+// sebelum diupload, maka akan ditampilkan preview
+// preview tersebut akan muncul di bawah input file
 document.querySelector('input[type="file"]').addEventListener('change', function(e) {
     if(e.target.files && e.target.files[0]) {
         const reader = new FileReader();
@@ -194,7 +192,7 @@ document.querySelector('input[type="file"]').addEventListener('change', function
     }
 });
 
-/* Validasi form sebelum submit
+/* Validasi form sebelum submit | PERLU TIDAK SIH?
 document.querySelector('form').addEventListener('submit', function(e) {
     const deskripsi = document.querySelector('textarea[name="deskripsi"]').value;
     if(deskripsi.length < 50) {

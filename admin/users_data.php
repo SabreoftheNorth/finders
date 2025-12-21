@@ -2,6 +2,29 @@
 session_start();
 require_once '../config/db_connect.php';
 
+/*
+████████╗██╗ ██████╗██╗  ██╗    ████████╗ ██████╗  ██████╗██╗  ██╗     
+╚══██╔══╝██║██╔════╝██║ ██╔╝    ╚══██╔══╝██╔═══██╗██╔════╝██║ ██╔╝     
+   ██║   ██║██║     █████╔╝        ██║   ██║   ██║██║     █████╔╝      
+   ██║   ██║██║     ██╔═██╗        ██║   ██║   ██║██║     ██╔═██╗      
+   ██║   ██║╚██████╗██║  ██╗       ██║   ╚██████╔╝╚██████╗██║  ██╗     
+   ╚═╝   ╚═╝ ╚═════╝╚═╝  ╚═╝       ╚═╝    ╚═════╝  ╚═════╝╚═╝  ╚═╝     
+                                                                       
+██╗███╗   ██╗██╗    ██████╗  █████╗ ███╗   ██╗██╗   ██╗ █████╗ ██╗  ██╗
+██║████╗  ██║██║    ██╔══██╗██╔══██╗████╗  ██║╚██╗ ██╔╝██╔══██╗██║ ██╔╝
+██║██╔██╗ ██║██║    ██████╔╝███████║██╔██╗ ██║ ╚████╔╝ ███████║█████╔╝ 
+██║██║╚██╗██║██║    ██╔══██╗██╔══██║██║╚██╗██║  ╚██╔╝  ██╔══██║██╔═██╗ 
+██║██║ ╚████║██║    ██████╔╝██║  ██║██║ ╚████║   ██║   ██║  ██║██║  ██╗
+╚═╝╚═╝  ╚═══╝╚═╝    ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝
+                                                                       
+███████╗███████╗██╗  ██╗ █████╗ ██╗     ██╗                            
+██╔════╝██╔════╝██║ ██╔╝██╔══██╗██║     ██║                            
+███████╗█████╗  █████╔╝ ███████║██║     ██║                            
+╚════██║██╔══╝  ██╔═██╗ ██╔══██║██║     ██║                            
+███████║███████╗██║  ██╗██║  ██║███████╗██║                            
+╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝                            
+*/
+
 // Handler AJAX untuk detail user
 if(isset($_GET['ajax']) && $_GET['ajax'] == 'user_detail') {
     $id_user = mysqli_real_escape_string($conn, $_GET['id']);
@@ -26,19 +49,21 @@ if(isset($_GET['ajax']) && $_GET['ajax'] == 'user_detail') {
     exit;
 }
 
-// Cek Login Admin
+// mengecek login admin
+// di mana jika session admin_id tidak ada, maka redirect ke halaman login
+// yang berarti hanya admin yang bisa mengakses halaman ini
 if(!isset($_SESSION['admin_id'])) {
-    // Simpan URL tujuan untuk redirect setelah login
+    // menyimpan URL tujuan untuk redirect setelah login
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
     header("Location: ../login.php");
     exit;
 }
 
-// Handle Delete
+// handler untuk delete user
 if(isset($_GET['delete'])) {
     $id_user = mysqli_real_escape_string($conn, $_GET['delete']);
     
-    // Cek apakah user memiliki penjadwalan
+    // cek apakah user memiliki penjadwalan aktif
     $check_jadwal = mysqli_query($conn, "SELECT COUNT(*) as total FROM data_penjadwalan WHERE id_user = '$id_user'");
     $jadwal_count = mysqli_fetch_assoc($check_jadwal)['total'];
     
@@ -57,11 +82,11 @@ if(isset($_GET['delete'])) {
     exit;
 }
 
-// Filter dan Search
+// filter & search
 $search = isset($_GET['search']) ? mysqli_real_escape_string($conn, $_GET['search']) : '';
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'terbaru';
 
-// Query dengan filter
+// query dgn filter
 $query_sql = "SELECT u.*, COUNT(p.id_penjadwalan) as total_booking
               FROM akun_user u
               LEFT JOIN data_penjadwalan p ON u.id_user = p.id_user
@@ -73,7 +98,7 @@ if($search) {
 
 $query_sql .= " GROUP BY u.id_user";
 
-// Sorting
+// sorting
 switch($sort) {
     case 'terlama':
         $query_sql .= " ORDER BY u.tanggal_daftar ASC";
@@ -90,7 +115,7 @@ switch($sort) {
 
 $result = mysqli_query($conn, $query_sql);
 
-// Statistics
+// statistik
 $total_users = mysqli_num_rows($result);
 $total_bookings = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as total FROM data_penjadwalan"))['total'];
 
@@ -116,7 +141,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
             
             <?php include 'includes/header_admin.php'; ?>
 
-            <!-- Alert Messages -->
+            <!-- message alert -->
             <?php if(isset($_SESSION['success_message'])): ?>
                 <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
                     <div class="flex items-center">
@@ -137,7 +162,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <!-- Filter & Search -->
+            <!-- filter & search -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
                 <form method="GET" class="flex flex-wrap gap-3">
                     <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" 
@@ -161,7 +186,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
                 </form>
             </div>
 
-            <!-- Statistics Cards -->
+            <!-- cards statistik -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
                     <div class="flex items-center justify-between">
@@ -202,7 +227,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
                 </div>
             </div>
 
-            <!-- Table -->
+            <!-- tabel -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -295,7 +320,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
         <?php include 'includes/footer_admin.php'; ?>
     </main>
 
-    <!-- Modal Overlay -->
+    <!-- modal overlay dll -->
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[999] hidden">
         <div id="modalContent" class="bg-white w-[90%] max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl relative">
             <button onclick="closeModal()" class="absolute top-4 right-4 z-10 text-gray-400 hover:text-gray-600 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg">
@@ -307,7 +332,7 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
         </div>
     </div>
 
-    <!-- Modal Detail User -->
+    <!-- modal utk detail user -->
     <div id="modalUserDetail" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center">
@@ -331,15 +356,28 @@ $page_subtitle = "Kelola akun pengguna terdaftar";
         
         modal.classList.remove('hidden');
         
-        // Fetch detail user via AJAX
+        // di sini akan melakukan fetch ke server utk ambil data user
+        // yang dipakai adalah ajax
+        /*
+        █████╗      ██╗ █████╗ ██╗  ██╗
+        ██╔══██╗     ██║██╔══██╗╚██╗██╔╝
+        ███████║     ██║███████║ ╚███╔╝ 
+        ██╔══██║██   ██║██╔══██║ ██╔██╗ 
+        ██║  ██║╚█████╔╝██║  ██║██╔╝ ██╗
+        ╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+        = Ajax adalah teknik untuk mengambil data dari server
+        = tanpa perlu me-refresh halaman secara keseluruhan
+        = sehingga pengalaman pengguna menjadi lebih baik
+        = dan interaksi terasa lebih cepat.
+        */
         fetch(`jadwal_data.php?user=${id}`)
             .then(response => response.text())
             .then(html => {
-                // Parse HTML untuk mengambil data user
+                // mengparse HTML untuk mengambil data user
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, 'text/html');
                 
-                // Ambil data dari halaman jadwal_data.php
+                // kemudian mengambil data dari halaman jadwal_data.php
                 fetch('<?php echo $_SERVER['PHP_SELF']; ?>?ajax=user_detail&id=' + id)
                     .then(response => response.json())
                     .then(data => {
